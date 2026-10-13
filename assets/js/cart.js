@@ -36,7 +36,7 @@ export function mountCart() {
       <div class="cart-empty">
         <p class="cart-empty-title">Пока пусто</p>
         <p>Загляните в каталог — десерты раскрываются, если навести на них курсор.</p>
-        <a class="btn dark" href="catalog.html">Открыть каталог <span class="arr">→</span></a>
+        <a class="btn" href="catalog.html">Открыть каталог <span class="arr">→</span></a>
       </div>
       <form class="order-form" novalidate>
         <h3>Оформление</h3>
@@ -50,7 +50,7 @@ export function mountCart() {
         <p>Мы скопировали текст заказа. Откройте чат в Telegram и вставьте сообщение — Елена ответит и подтвердит детали.</p>
         <pre class="order-text"></pre>
         <div class="order-done-actions">
-          <a class="btn dark" target="_blank" rel="noopener" href="https://t.me/${CONTACTS.primary}">Открыть чат @${CONTACTS.primary}</a>
+          <a class="btn" target="_blank" rel="noopener" href="https://t.me/${CONTACTS.primary}">Открыть чат @${CONTACTS.primary}</a>
           <button class="btn ghost" type="button" data-copy>Скопировать ещё раз</button>
         </div>
         <p class="muted small">Второй контакт для заказов: <a target="_blank" rel="noopener" href="https://t.me/${CONTACTS.secondary}">@${CONTACTS.secondary}</a></p>
@@ -58,7 +58,7 @@ export function mountCart() {
     </div>
     <footer class="drawer-foot">
       <div class="cart-total"><span>Итого</span><strong></strong></div>
-      <button class="btn dark wide" data-checkout>Отправить заказ в Telegram</button>
+      <button class="btn wide" data-checkout>Отправить заказ в Telegram</button>
       <p class="muted small">Оплата и детали — после подтверждения в переписке.</p>
     </footer>
   </aside>`;
@@ -74,8 +74,8 @@ export function mountCart() {
     list.innerHTML = its.map(i => {
       const p = byId(i.id);
       return `<li class="cart-item" data-id="${p.id}">
-        <span class="cart-swatch" style="background:${swatch(p)}"></span>
-        <div class="cart-item-info"><b>${p.name}</b><span>${rub(p.price)} · шт.</span></div>
+        <span class="cart-swatch"><img src="${p.photo}" alt=""></span>
+        <div class="cart-item-info"><b>${p.name}</b><span>${rub(p.price)} за десерт</span></div>
         <div class="stepper"><button type="button" data-dec aria-label="Меньше">−</button><span>${i.qty}</span><button type="button" data-inc aria-label="Больше">+</button></div>
         <b class="cart-item-sum">${rub(p.price * i.qty)}</b>
       </li>`;
@@ -125,8 +125,8 @@ export function flyToCart(fromEl, product) {
   const target = document.querySelector('.cart-btn'); if (!target) return;
   const a = fromEl.getBoundingClientRect(), b = target.getBoundingClientRect();
   const dot = document.createElement('span');
-  dot.className = 'fly-dot'; dot.style.background = swatch(product);
-  dot.style.left = a.left + a.width / 2 - 14 + 'px'; dot.style.top = a.top + a.height / 2 - 14 + 'px';
+  dot.className = 'fly-dot'; dot.innerHTML = `<img src="${product.photo}" alt="">`;
+  dot.style.left = a.left + a.width / 2 - 20 + 'px'; dot.style.top = a.top + a.height / 2 - 20 + 'px';
   document.body.appendChild(dot);
   const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
   dot.animate([

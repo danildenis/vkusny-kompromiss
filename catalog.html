@@ -8,17 +8,17 @@
 <meta property="og:title" content="Каталог — Вкусный компромисс">
 <meta property="og:description" content="Девять корпусных десертов: фисташка, манго, черника, кофейное зерно, малина, банан, лимон, жвачка и попкорн.">
 <meta property="og:image" content="assets/img/logo.png">
-<meta name="theme-color" content="#6C151E">
+<meta name="theme-color" content="#F8EBDD">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Forum&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="icon" href="assets/img/logo.png">
-<script>document.documentElement.classList.add('js');</script>
+<link rel="preload" as="image" href="assets/img/fruit/mango-hero.png">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
-<div class="curtain" aria-hidden="true"><img src="assets/img/logo.png" alt=""></div>
+<div class="veil" aria-hidden="true"></div>
 <canvas id="gl" aria-hidden="true"></canvas>
 
 <header class="site-head">
@@ -27,11 +27,11 @@
     <nav class="nav left" aria-label="Разделы"><a href="index.html">Главная</a><a href="catalog.html" class="on">Каталог</a></nav>
     <a class="logo-mark" href="index.html" aria-label="Вкусный компромисс — на главную">
       <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48"/></svg>
-      <img src="assets/img/logo.png" alt="Вкусный компромисс" width="74" height="74">
+      <img src="assets/img/logo.png" alt="Вкусный компромисс" width="76" height="76">
     </a>
     <nav class="nav right" aria-label="О десертах"><a href="index.html#inside">Что внутри</a><a href="index.html#order">Как заказать</a></nav>
     <button class="cart-btn" data-open-cart aria-label="Корзина">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M5 8.5h14l-1.1 10.6a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5 8.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M5 8.5h14l-1.1 10.6a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5 8.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
       <span class="count" data-cart-count>0</span>
     </button>
   </div>
@@ -39,6 +39,8 @@
 
 <main>
   <section class="page-top">
+    <div class="deco blur f1" data-depth="-0.4" style=""><div class="deco-in" style="--dl:.2s"><img src="assets/img/deco/daisy.png" alt=""></div></div>
+    <div class="deco soft f2 hide-m" data-depth="0.6" style=""><div class="deco-in" style="--dl:.5s"><img src="assets/img/fruit/raspberry.png" alt=""></div></div>
     <div class="wrap grid">
       <div class="pt-title reveal">
         <p class="eyebrow">Каталог</p>
@@ -53,22 +55,23 @@
     <div class="wrap"><div class="cards catalog-grid"></div></div>
   </section>
 
-  <section class="cat-sets sec green">
+  <section class="cat-sets sec panel green dark">
     <div class="wrap grid">
       <div class="cs-title reveal"><p class="eyebrow">Наборы</p><h2 class="big">Мини-наборы для дегустации <span class="acc">и большие — для праздника</span></h2></div>
       <div class="cs-text reveal d2">
         <p class="muted">Добавьте в корзину нужные вкусы — Елена соберёт их в коробку. Количество ограничено, лучше заказывать заранее.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://t.me/KurbatovaElen">Спросить про набор <span class="arr">→</span></a>
+        <a class="btn light" target="_blank" rel="noopener" href="https://t.me/KurbatovaElen">Спросить про набор <span class="arr">→</span></a>
       </div>
     </div>
   </section>
 </main>
-
-<footer class="site-foot">
+<div style="height:clamp(8px,1.4vw,20px)"></div>
+<footer class="site-foot dark">
+  <div class="foot-flower" aria-hidden="true"><img src="assets/img/deco/daisy.png" alt=""></div>
   <div class="wrap">
     <div class="grid foot-top">
       <div class="foot-brand">
-        <img src="assets/img/logo.png" alt="Вкусный компромисс" width="96" height="96">
+        <img src="assets/img/logo.png" alt="Вкусный компромисс" width="104" height="104">
         <p class="foot-tag">Вам не придётся выбирать</p>
       </div>
       <div class="foot-col first">
@@ -85,7 +88,7 @@
       </div>
     </div>
     <div class="foot-word" aria-hidden="true">Компромисс</div>
-    <div class="foot-bottom"><span>© Вкусный компромисс</span><span>Демоверсия сайта</span></div>
+    <div class="foot-bottom"><span>© Вкусный компромисс</span><span>Фото фруктов и цветов: Unsplash · Демоверсия сайта</span></div>
   </div>
 </footer>
 

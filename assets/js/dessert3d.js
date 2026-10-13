@@ -226,10 +226,10 @@ const DRAW = {
   mousse(g, s, c) {
     g.fillStyle = c; g.fillRect(0, 0, s, s);
     for (let i = 0; i < 16; i++) { const x = rnd() * s, y = rnd() * s, r = 40 + rnd() * 120; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, shade(c, rnd() > .5 ? .04 : -.04) + '66'); gr.addColorStop(1, c + '00'); g.fillStyle = gr; g.fillRect(0, 0, s, s); }
-    for (let i = 0; i < 300; i++) {
-      const x = rnd() * s, y = rnd() * s, r = .8 + rnd() ** 3 * 5;
-      g.fillStyle = shade(c, -.14) + 'aa'; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
-      g.fillStyle = shade(c, .08) + 'cc'; g.beginPath(); g.arc(x - r * .2, y - r * .2, r * .55, 0, TAU); g.fill();
+    for (let i = 0; i < 420; i++) {
+      const x = rnd() * s, y = rnd() * s, r = .6 + rnd() ** 3 * 3;
+      g.fillStyle = shade(c, -.07) + '66'; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+      g.fillStyle = shade(c, .05) + '88'; g.beginPath(); g.arc(x - r * .2, y - r * .2, r * .5, 0, TAU); g.fill();
     }
     grain(g, s, 8);
   },
@@ -279,12 +279,15 @@ const DRAW = {
   },
 };
 const texCache = new Map();
-function layerTexture(L) {
+export function layerTexture(L) {
   const key = [L.type, L.color, L.accent, L.chunks, L.seeds, L.berries].join('|');
   if (texCache.has(key)) return texCache.get(key);
   const s = 512, cv = document.createElement('canvas'); cv.width = cv.height = s;
   seed = key.length * 97 + 13;
   (DRAW[L.type] || DRAW.mousse)(cv.getContext('2d'), s, L.color, L.accent || shade(L.color, .1), L);
+  // лёгкое размытие убирает «нарисованность»
+  const soft = document.createElement('canvas'); soft.width = soft.height = s;
+  const sg = soft.getContext('2d'); sg.filter = 'blur(.9px)'; sg.drawImage(cv, 0, 0); cv.getContext('2d').drawImage(soft, 0, 0);
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
   texCache.set(key, t);
@@ -300,7 +303,7 @@ function spray() {
   return sprayTex;
 }
 let shadowTex = null;
-function shadowTexture() {
+export function shadowTexture() {
   if (shadowTex) return shadowTex;
   const s = 256, cv = document.createElement('canvas'); cv.width = cv.height = s; const g = cv.getContext('2d');
   const gr = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
@@ -310,7 +313,7 @@ function shadowTexture() {
   return shadowTex;
 }
 
-function layerMaterial(L) {
+export function layerMaterial(L) {
   const map = layerTexture(L);
   const glossy = L.type === 'confit' || L.type === 'caramel';
   if (glossy) return new THREE.MeshStandardMaterial({ map, color: C('#e2d8d0'), roughness: .2, envMapIntensity: .7, side: THREE.DoubleSide });

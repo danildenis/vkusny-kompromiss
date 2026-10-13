@@ -9,7 +9,7 @@ grid.innerHTML = PRODUCTS.map((p, i) => cardHTML(p, i)).join('');
 grid.querySelectorAll('.card').forEach(c => bindCard(c, stage, modal));
 watch();
 
-chips.innerHTML = FILTERS.map((f, i) => `<button class="chip${i ? '' : ' on'}" data-f="${f.id}">${f.label}<sup>${f.id === 'all' ? PRODUCTS.length : PRODUCTS.filter(p => p.tags.includes(f.id)).length}</sup></button>`).join('');
+chips.innerHTML = FILTERS.map((f, i) => `<button class="chip${i ? '' : ' on'}" data-f="${f.id}">${f.label}<span class="c">${f.id === 'all' ? PRODUCTS.length : PRODUCTS.filter(p => p.tags.includes(f.id)).length}</span></button>`).join('');
 chips.addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
   chips.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b));

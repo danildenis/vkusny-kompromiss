@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { initPage, cardHTML, bindCard } from './ui.js';
-import { createDessert, addLights, clamp, smooth } from './dessert3d.js';
+import { addLights, clamp, smooth } from './dessert3d.js';
+import { createPhotoDessert } from './photo3d.js';
 import { byId } from './products.js';
 
 const { stage, modal, watch } = initPage();
@@ -15,6 +16,7 @@ const foot = document.querySelector('.hero-foot');
 const cue = document.querySelector('.cue-wrap');
 const panels = [...document.querySelectorAll('.hero-panel')];
 const labels = [...document.querySelectorAll('.hero-label')];
+const decos = [...document.querySelectorAll('.hero .deco')].map(el => ({ el, depth: +el.dataset.depth || 0, base: el.style.transform || '' }));
 const mobile = () => innerWidth < 820;
 const qp = new URLSearchParams(location.search), DBG = qp.has('p') ? +qp.get('p') : null;
 
@@ -29,13 +31,13 @@ stage.add({
   init(st) {
     this.scene = new THREE.Scene();
     addLights(this.scene, st.env);
-    d = createDessert(byId('mango'), { quality: 1.6, hideVec: new THREE.Vector3(0, -.6, 0) });
-    this.scene.add(d.root);
     this.camera = new THREE.PerspectiveCamera(22, 1, .1, 80);
+    createPhotoDessert(byId('mango'), { grid: 220 }).then(dd => { d = dd; this.scene.add(d.root); d.root.scale.setScalar(.001); });
   },
   update(dt, t, rect) {
+    if (!d) return;
     // ждём, пока уйдёт занавес
-    if (t0 === null) { if (!html.classList.contains('loaded') && DBG === null) { d.root.scale.setScalar(.001); return; } t0 = t + .55; }
+    if (t0 === null) { if (!html.classList.contains('loaded') && DBG === null) { d.root.scale.setScalar(.001); return; } t0 = t + .2; }
     const r = hero.getBoundingClientRect();
     const p = DBG ?? clamp(-r.top / (r.height - innerHeight));
     ps += (p - ps) * (1 - Math.exp(-dt * 7));
@@ -55,7 +57,7 @@ stage.add({
 
     // камера: десерт крупно по центру
     const cam = this.camera, W = rect.width, H = rect.height, m = mobile();
-    const fit = (m ? 1.05 : .82) * (1 + open * (m ? .25 : .42) + explode * (m ? .3 : .45));
+    const fit = (m ? 1.1 : .95) * (1 + open * (m ? .25 : .42) + explode * (m ? .3 : .45));
     const dist = d.radius * fit / Math.sin(THREE.MathUtils.degToRad(cam.fov / 2)) / (m ? Math.max(W / H, .5) : Math.min(1, W / H / 1.2));
     cam.position.set(0, Math.sin(.16) * dist, Math.cos(.16) * dist);
     cam.lookAt(0, 0, 0);
@@ -73,6 +75,11 @@ stage.add({
     foot.style.pointerEvents = ps > .05 ? 'none' : '';
     cue.style.opacity = 1 - smooth(.01, .05, ps);
 
+    // цветы и ягоды вокруг плывут за курсором и уходят при прокрутке
+    decos.forEach(o => {
+      const k = o.depth;
+      o.el.style.transform = `translate3d(${ptr.x * k * 46}px, ${ptr.y * k * 30 - ps * k * 220 + Math.sin(t * .6 + k * 3) * 6 * Math.abs(k)}px, 0) ${o.base}`;
+    });
     panels.forEach(pn => {
       const a = +pn.dataset.from, b = +pn.dataset.to;
       const vis = smooth(a, a + .05, ps) * (1 - smooth(b - .05, b, ps));

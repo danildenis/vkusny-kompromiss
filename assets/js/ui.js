@@ -1,7 +1,8 @@
 // Карточки десертов, окно «Состав и КБЖУ», общие элементы страниц.
 import * as THREE from 'three';
 import { Stage } from './stage.js';
-import { createDessert, addLights, clamp } from './dessert3d.js';
+import { addLights, clamp } from './dessert3d.js';
+import { createPhotoDessert } from './photo3d.js';
 import { byId, rub } from './products.js';
 import { cart, mountCart, flyToCart } from './cart.js';
 
@@ -18,11 +19,11 @@ export function dessertView(el, product, opts = {}) {
     init(stage) {
       view.scene = new THREE.Scene();
       addLights(view.scene, stage.env);
-      d = view.dessert = createDessert(product, { quality: opts.quality ?? .8, hideVec: new THREE.Vector3(0, -.2, -6) });
-      view.scene.add(d.root);
       view.camera = new THREE.PerspectiveCamera(opts.fov ?? 24, 1, .1, 60);
+      createPhotoDessert(product, { grid: opts.grid ?? 120 }).then(dd => { if (view.disposed) return dd.dispose(); d = view.dessert = dd; view.scene.add(dd.root); });
     },
     update(dt, t, rect) {
+      if (!d) return;
       const k = 1 - Math.exp(-dt * (opts.speed ?? 4.5));
       st.open += (st.tOpen - st.open) * k; st.explode += (st.tExplode - st.explode) * k; st.hide += (st.tHide - st.hide) * k;
       ptr.x += (ptr.tx - ptr.x) * k; ptr.y += (ptr.ty - ptr.y) * k;
@@ -37,18 +38,18 @@ export function dessertView(el, product, opts = {}) {
       d.root.rotation.y = Math.sin(t * .55 + phase) * .16 * (1 - st.explode * .6) + ptr.x * .35;
       d.root.rotation.x = ptr.y * .18;
       d.root.position.y = Math.sin(t * 1.25 + phase) * .025 - (1 - a) * .5;
-      d.root.rotation.y += (1 - a) * -1.6;
+      d.root.rotation.x += (1 - a) * .25;
       const cam = view.camera, aspect = rect.width / rect.height;
       const fit = (opts.fit ?? .8) * (1 + st.explode * (opts.explodeZoom ?? .45));
       let dist = d.radius * fit / Math.sin(THREE.MathUtils.degToRad(cam.fov / 2));
       if (aspect < 1) dist /= Math.max(aspect, .55);
-      const el2 = opts.elev ?? .2;
+      const el2 = opts.elev ?? .1;
       cam.position.set(0, Math.sin(el2) * dist, Math.cos(el2) * dist);
       cam.lookAt(0, (opts.lookY ?? -.04) * d.radius, 0);
     },
     setOpen(v) { st.tOpen = v; }, setExplode(v) { st.tExplode = v; }, setHide(v) { st.tHide = v; },
     pointer(x, y) { ptr.tx = x; ptr.ty = y; },
-    dispose() { d?.dispose(); },
+    dispose() { view.disposed = true; d?.dispose(); },
   };
   return view;
 }
@@ -61,7 +62,7 @@ export function cardHTML(p, i = 0) {
       <ul class="card-layers">${p.three.layers.map(l => `<li><i style="background:${l.color}"></i>${l.label}</li>`).join('')}</ul>
     </div>
     <div class="card-body">
-      <div class="card-title"><h3>${p.name}</h3><span class="price">${rub(p.price)}</span></div>
+      <div class="card-title"><h3>${p.name}</h3><span class="price">${rub(p.price)}<small>/ шт</small></span></div>
       <p>${p.short}</p>
       <div class="card-actions">
         <button class="btn small" data-add>В корзину</button>
@@ -74,7 +75,7 @@ export function cardHTML(p, i = 0) {
 export function bindCard(card, stage, modal) {
   const p = byId(card.dataset.id);
   const stageEl = card.querySelector('[data-stage]');
-  const view = stage.add(dessertView(stageEl, p, { quality: .8, revealEl: card }));
+  const view = stage.add(dessertView(stageEl, p, { grid: 150, revealEl: card }));
   card._view = view;
   const setOpen = v => { view.setOpen(v); view.setExplode(v ? .14 : 0); card.classList.toggle('is-open', !!v); };
   if (isTouch) {
@@ -122,12 +123,13 @@ export function mountModal() {
 
   function renderInfo(p) {
     info.innerHTML = `
-      <p class="eyebrow">Корпусный десерт · ${rub(p.price)}</p>
+      <p class="eyebrow">Корпусный десерт</p>
       <h2>${p.name}</h2>
+      <p class="modal-price">${rub(p.price)} <small>за десерт</small></p>
       <p class="modal-short">${p.short}</p>
       <p class="modal-desc">${p.desc}</p>
       <h4>Что внутри</h4>
-      <ol class="layer-list">${p.three.layers.map((l, i) => `<li><i style="background:${l.color}"></i><span>${l.label}</span><em>${String(i + 1).padStart(2, '0')}</em></li>`).join('')}</ol>
+      <ol class="layer-list">${p.three.layers.map((l, i) => `<li><i style="background:${l.color}"></i><span>${l.label}</span><em>${i + 1}</em></li>`).join('')}</ol>
       <h4>КБЖУ на 100 г</h4>
       <div class="kbju">
         <div><b>${p.kbju.k}</b><span>ккал</span></div><div><b>${p.kbju.b}</b><span>белки</span></div>
@@ -137,7 +139,7 @@ export function mountModal() {
       <ul class="facts">${p.facts.map(f => `<li>${f}</li>`).join('')}</ul>
       <div class="modal-buy">
         <div class="stepper big"><button type="button" data-dec aria-label="Меньше">−</button><span data-qty>1</span><button type="button" data-inc aria-label="Больше">+</button></div>
-        <button class="btn dark" data-add>В корзину · <span data-sum>${rub(p.price)}</span></button>
+        <button class="btn" data-add>В корзину · <span data-sum>${rub(p.price)}</span></button>
       </div>`;
     const upd = () => { info.querySelector('[data-qty]').textContent = qty; info.querySelector('[data-sum]').textContent = rub(p.price * qty); };
     info.querySelector('[data-inc]').onclick = () => { qty++; upd(); };
@@ -153,7 +155,7 @@ export function mountModal() {
     document.documentElement.classList.add('modal-open');
     if (!stage) stage = new Stage(el.querySelector('.modal-gl'));
     if (view) { stage.remove(view); view.dispose(); }
-    view = stage.add(dessertView(stageEl, p, { quality: 1.1, fit: .95, explodeZoom: .22, elev: .22 }));
+    view = stage.add(dessertView(stageEl, p, { grid: 170, fit: .95, explodeZoom: .3, elev: .12 }));
     stage.paused = false;
     setMode(0);
     setTimeout(() => current === p && setMode(1), 450);
@@ -179,8 +181,13 @@ export function initPage() {
   const stage = new Stage(document.getElementById('gl'));
 
   // занавес: логотип появляется, затем занавес уходит вверх
-  const reveal = () => setTimeout(() => html.classList.add('loaded'), 650);
-  Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(r => setTimeout(r, 1400))]).then(reveal);
+  const reveal = () => requestAnimationFrame(() => html.classList.add('loaded'));
+  if (location.search.includes('shot')) {
+    html.classList.add('loaded', 'shot');
+    const go = new URLSearchParams(location.search).get('go');
+    if (go) document.querySelectorAll('main > *').forEach(el => { if (el.id !== go && !el.classList.contains(go)) el.style.display = 'none'; });
+  }
+  Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(r => setTimeout(r, 450))]).then(reveal);
   addEventListener('pageshow', e => { if (e.persisted) { html.classList.remove('leaving'); html.classList.add('loaded'); } });
 
   // плавный уход на другую страницу
@@ -200,7 +207,7 @@ export function initPage() {
     if (a.classList.contains('logo-mark')) boop(a);
     html.classList.remove('menu-open');
     html.classList.add('leaving'); html.classList.remove('loaded');
-    setTimeout(() => { location.href = a.href; }, 700);
+    setTimeout(() => { location.href = a.href; }, 280);
   });
   const boop = el => { el.classList.remove('boop'); void el.offsetWidth; el.classList.add('boop'); };
 
@@ -212,7 +219,7 @@ export function initPage() {
 
   // появление блоков
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -6% 0px' });
-  const watch = () => document.querySelectorAll('.reveal:not(.in)').forEach(n => io.observe(n));
+  const watch = () => document.querySelectorAll('.reveal:not(.in)').forEach(n => html.classList.contains('shot') ? n.classList.add('in') : io.observe(n));
   watch();
   return { stage, modal, watch };
 }

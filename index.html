@@ -8,17 +8,17 @@
 <meta property="og:title" content="Вкусный компромисс — корпусные десерты">
 <meta property="og:description" content="Корпусные десерты ручной работы: выглядят как настоящие фрукты, а внутри — мусс, начинка и хруст. Вам не придётся выбирать.">
 <meta property="og:image" content="assets/img/logo.png">
-<meta name="theme-color" content="#6C151E">
+<meta name="theme-color" content="#F8EBDD">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Forum&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="icon" href="assets/img/logo.png">
-<script>document.documentElement.classList.add('js');</script>
+<link rel="preload" as="image" href="assets/img/fruit/mango-hero.png">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
-<div class="curtain" aria-hidden="true"><img src="assets/img/logo.png" alt=""></div>
+<div class="veil" aria-hidden="true"></div>
 <canvas id="gl" aria-hidden="true"></canvas>
 
 <header class="site-head">
@@ -27,11 +27,11 @@
     <nav class="nav left" aria-label="Разделы"><a href="index.html" class="on">Главная</a><a href="catalog.html">Каталог</a></nav>
     <a class="logo-mark" href="index.html" aria-label="Вкусный компромисс — на главную">
       <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48"/></svg>
-      <img src="assets/img/logo.png" alt="Вкусный компромисс" width="74" height="74">
+      <img src="assets/img/logo.png" alt="Вкусный компромисс" width="76" height="76">
     </a>
     <nav class="nav right" aria-label="О десертах"><a href="index.html#inside">Что внутри</a><a href="index.html#order">Как заказать</a></nav>
     <button class="cart-btn" data-open-cart aria-label="Корзина">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M5 8.5h14l-1.1 10.6a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5 8.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M5 8.5h14l-1.1 10.6a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5 8.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
       <span class="count" data-cart-count>0</span>
     </button>
   </div>
@@ -40,6 +40,14 @@
 <main>
   <section class="hero" aria-label="Корпусный десерт Манго">
     <div class="hero-sticky">
+      <div class="deco blur" data-depth="-0.6" style="left:-4%;top:9%;width:min(24vw,330px);--b:7px;opacity:.7"><div class="deco-in" style="--dl:.15s"><img src="assets/img/deco/daisy.png" alt=""></div></div>
+      <div class="deco blur" data-depth="-0.3" style="left:1%;bottom:-14%;width:min(22vw,320px);--b:3px;opacity:.85;transform-origin:bottom"><div class="deco-in" style="--dl:.25s"><img src="assets/img/deco/euca.png" alt=""></div></div>
+      <div class="deco blur hide-m" data-depth="-0.45" style="right:3%;top:6%;width:min(22vw,300px);--b:4px;opacity:.8"><div class="deco-in" style="--dl:.2s"><img src="assets/img/deco/euca2.png" alt=""></div></div>
+      <div class="deco blur" data-depth="-0.8" style="right:-5%;bottom:4%;width:min(26vw,360px);--b:9px;opacity:.65"><div class="deco-in" style="--dl:.3s"><img src="assets/img/deco/chamomile.png" alt=""></div></div>
+      <div class="deco soft hide-m" data-depth="0.5" style="right:22%;top:17%;width:min(8vw,120px);transform:rotate(18deg)"><div class="deco-in" style="--dl:.6s"><img src="assets/img/deco/daisy2.png" alt=""></div></div>
+      <div class="deco soft hide-m" data-depth="0.8" style="left:20%;top:23%;width:min(5.4vw,84px)"><div class="deco-in" style="--dl:.75s"><img src="assets/img/fruit/blueberry.png" alt=""></div></div>
+      <div class="deco blur hide-m" data-depth="1.1" style="right:11%;bottom:9%;width:min(6vw,92px);--b:2.5px"><div class="deco-in" style="--dl:.85s"><img src="assets/img/fruit/raspberry.png" alt=""></div></div>
+      <div class="deco blur hide-m" data-depth="1.4" style="left:25%;bottom:15%;width:min(3.8vw,58px);--b:4px;transform:rotate(-30deg)"><div class="deco-in" style="--dl:.95s"><img src="assets/img/fruit/coffee.png" alt=""></div></div>
       <svg class="hero-rings" viewBox="0 0 100 100" aria-hidden="true"><circle class="r1" cx="50" cy="50" r="49.5" pathLength="320"/><circle class="r2" cx="50" cy="50" r="43"/></svg>
       <h1 class="hero-title">
         <span class="ht-small"><span class="split"><span>Вкусный</span></span></span>
@@ -85,12 +93,14 @@
     </div>
   </section>
   <div class="hero-labels" aria-hidden="true">
-    <div class="hero-label"><span><b>01</b><em>Тонкий корпус</em><i>Корпус</i></span></div>
-    <div class="hero-label"><span><b>02</b><em>Фруктовый мусс</em><i>Мусс</i></span></div>
-    <div class="hero-label"><span><b>03</b><em>Начинка с кусочками манго</em><i>Начинка</i></span></div>
+    <div class="hero-label"><span><b>1</b><em>Тонкий корпус</em><i>Корпус</i></span></div>
+    <div class="hero-label"><span><b>2</b><em>Фруктовый мусс</em><i>Мусс</i></span></div>
+    <div class="hero-label"><span><b>3</b><em>Начинка с кусочками манго</em><i>Начинка</i></span></div>
   </div>
 
-  <section class="about sec light" id="inside">
+  <section class="about sec panel bordo dark" id="inside">
+    <div class="about-flower" aria-hidden="true"><img src="assets/img/deco/chamomile.png" alt=""></div>
+    <div class="about-photo reveal d2" aria-hidden="true"><img src="assets/img/fruit/mangocut.png" alt=""></div>
     <div class="wrap">
       <div class="grid about-top">
         <div class="a-title reveal">
@@ -103,9 +113,9 @@
         </div>
       </div>
       <div class="grid layers-row">
-        <div class="layer-item reveal"><div class="li-top"><span class="num">01</span><div class="ring r1"></div></div><h3>Корпус</h3><p>Тонкая хрустящая оболочка с бархатным покрытием повторяет форму фрукта — до прожилок и румянца.</p></div>
-        <div class="layer-item reveal d1"><div class="li-top"><span class="num">02</span><div class="ring r2"></div></div><h3>Мусс</h3><p>Лёгкий и воздушный: фруктовый, ягодный, сливочный или кофейный — в каждом десерте свой.</p></div>
-        <div class="layer-item reveal d2"><div class="li-top"><span class="num">03</span><div class="ring r3"></div></div><h3>Сердце</h3><p>Текучая начинка, ягодный центр, карамель или хрустящий крамбл — самое интересное прячется внутри.</p></div>
+        <div class="layer-item reveal"><span class="n">01</span><h3>Корпус</h3><p>Тонкая хрустящая оболочка с бархатным покрытием повторяет форму фрукта.</p></div>
+        <div class="layer-item reveal d1"><span class="n">02</span><h3>Мусс</h3><p>Лёгкий и воздушный: фруктовый, ягодный, сливочный или кофейный.</p></div>
+        <div class="layer-item reveal d2"><span class="n">03</span><h3>Сердце</h3><p>Текучая начинка, ягодный центр, карамель или хрустящий крамбл.</p></div>
       </div>
     </div>
   </section>
@@ -121,7 +131,7 @@
     </div>
   </section>
 
-  <section class="sets sec green" id="sets">
+  <section class="sets sec panel green dark" id="sets">
     <div class="wrap">
       <div class="grid sec-head">
         <div class="sh-title reveal"><p class="eyebrow">Наборы</p><h2 class="big">Для дегустации <span class="acc">и для праздника</span></h2></div>
@@ -133,24 +143,39 @@
             <p class="eyebrow">Попробовать всё</p>
             <h3>Мини-набор</h3>
             <p>Несколько разных вкусов, чтобы найти свой. Удобно взять на пробу или порадовать себя вечером.</p>
-            <a class="btn dark small" href="catalog.html">Собрать набор <span class="arr">→</span></a>
+            <a class="btn small" href="catalog.html">Собрать набор <span class="arr">→</span></a>
           </div>
-          <div class="box mini"><i style="background:#FFB52E"></i><i style="background:#2F3C72"></i><i style="background:#8CAF4F"></i><i style="background:#D8456D"></i></div>
+          <div class="set-fruits" aria-hidden="true">
+            <img src="assets/img/fruit/blueberry.png" alt="" style="left:6%;top:8%;width:40%">
+            <img src="assets/img/fruit/raspberry.png" alt="" style="right:4%;top:0;width:38%">
+            <img src="assets/img/fruit/lemon.png" alt="" style="left:0;bottom:6%;width:56%">
+            <img src="assets/img/fruit/coffee.png" alt="" style="right:10%;bottom:4%;width:26%">
+          </div>
         </article>
         <article class="set reveal d2">
           <div>
             <p class="eyebrow">В подарок</p>
             <h3>Большой набор</h3>
             <p>Для дня рождения, праздника или команды: коробка, которую хочется сфотографировать, прежде чем открыть.</p>
-            <a class="btn dark small" href="catalog.html">Собрать набор <span class="arr">→</span></a>
+            <a class="btn small" href="catalog.html">Собрать набор <span class="arr">→</span></a>
           </div>
-          <div class="box big"><i style="background:#FF9418"></i><i style="background:#8E5230"></i><i style="background:#F3D24B"></i><i style="background:#F48FB6"></i><i style="background:#FFE04A"></i><i style="background:#2F3C72"></i><i style="background:#FFF2D6"></i><i style="background:#D8456D"></i><i style="background:#8CAF4F"></i></div>
+          <div class="set-fruits" aria-hidden="true">
+            <img src="assets/img/fruit/mango-hero.png" alt="" style="left:4%;top:0;width:52%">
+            <img src="assets/img/fruit/pistachio.png" alt="" style="right:6%;top:6%;width:30%">
+            <img src="assets/img/fruit/banana.png" alt="" style="left:0;bottom:4%;width:64%">
+            <img src="assets/img/fruit/gum.png" alt="" style="right:0;bottom:12%;width:30%;filter:hue-rotate(-12deg) saturate(1.6) drop-shadow(0 16px 18px rgba(108,21,30,.22))">
+          </div>
         </article>
       </div>
     </div>
   </section>
 
-  <section class="how sec light" id="order">
+  <section class="how sec" id="order">
+    <div class="how-deco" aria-hidden="true">
+      <img class="hd1" src="assets/img/deco/daisy2.png" alt="">
+      <img class="hd2" src="assets/img/fruit/raspberry.png" alt="">
+      <img class="hd3" src="assets/img/deco/euca2.png" alt="">
+    </div>
     <div class="wrap">
       <div class="grid sec-head">
         <div class="sh-title reveal"><p class="eyebrow">Как заказать</p><h2 class="big">Три шага <span class="acc">до сладкого вечера</span></h2></div>
@@ -160,16 +185,17 @@
         <div class="step reveal d1"><b>02</b><h3>Оформите заказ</h3><p>Укажите имя, контакт и дату. Мы соберём текст заказа за вас.</p></div>
         <div class="step reveal d2"><b>03</b><h3>Отправьте в Telegram</h3><p>Заказ уходит Елене в личные сообщения — она подтвердит детали и время.</p></div>
       </div>
-      <div class="how-cta reveal"><a class="btn dark" href="catalog.html">Выбрать десерты <span class="arr">→</span></a><a class="btn ghost" target="_blank" rel="noopener" href="https://t.me/vkusmiss">Канал в Telegram</a></div>
+      <div class="how-cta reveal"><a class="btn" href="catalog.html">Выбрать десерты <span class="arr">→</span></a><a class="btn ghost" target="_blank" rel="noopener" href="https://t.me/vkusmiss">Канал в Telegram</a></div>
     </div>
   </section>
 </main>
-
-<footer class="site-foot">
+<div style="height:clamp(8px,1.4vw,20px)"></div>
+<footer class="site-foot dark">
+  <div class="foot-flower" aria-hidden="true"><img src="assets/img/deco/daisy.png" alt=""></div>
   <div class="wrap">
     <div class="grid foot-top">
       <div class="foot-brand">
-        <img src="assets/img/logo.png" alt="Вкусный компромисс" width="96" height="96">
+        <img src="assets/img/logo.png" alt="Вкусный компромисс" width="104" height="104">
         <p class="foot-tag">Вам не придётся выбирать</p>
       </div>
       <div class="foot-col first">
@@ -186,7 +212,7 @@
       </div>
     </div>
     <div class="foot-word" aria-hidden="true">Компромисс</div>
-    <div class="foot-bottom"><span>© Вкусный компромисс</span><span>Демоверсия сайта</span></div>
+    <div class="foot-bottom"><span>© Вкусный компромисс</span><span>Фото фруктов и цветов: Unsplash · Демоверсия сайта</span></div>
   </div>
 </footer>
 
