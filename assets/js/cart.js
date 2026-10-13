@@ -36,7 +36,7 @@ export function mountCart() {
       <div class="cart-empty">
         <p class="cart-empty-title">Пока пусто</p>
         <p>Загляните в каталог — десерты раскрываются, если навести на них курсор.</p>
-        <a class="btn" href="catalog.html">Открыть каталог</a>
+        <a class="btn dark" href="catalog.html">Открыть каталог <span class="arr">→</span></a>
       </div>
       <form class="order-form" novalidate>
         <h3>Оформление</h3>
@@ -50,15 +50,15 @@ export function mountCart() {
         <p>Мы скопировали текст заказа. Откройте чат в Telegram и вставьте сообщение — Елена ответит и подтвердит детали.</p>
         <pre class="order-text"></pre>
         <div class="order-done-actions">
-          <a class="btn" target="_blank" rel="noopener" href="https://t.me/${CONTACTS.primary}">Открыть чат @${CONTACTS.primary}</a>
+          <a class="btn dark" target="_blank" rel="noopener" href="https://t.me/${CONTACTS.primary}">Открыть чат @${CONTACTS.primary}</a>
           <button class="btn ghost" type="button" data-copy>Скопировать ещё раз</button>
         </div>
-        <p class="muted">Второй контакт для заказов: <a target="_blank" rel="noopener" href="https://t.me/${CONTACTS.secondary}">@${CONTACTS.secondary}</a></p>
+        <p class="muted small">Второй контакт для заказов: <a target="_blank" rel="noopener" href="https://t.me/${CONTACTS.secondary}">@${CONTACTS.secondary}</a></p>
       </div>
     </div>
     <footer class="drawer-foot">
       <div class="cart-total"><span>Итого</span><strong></strong></div>
-      <button class="btn wide" data-checkout>Отправить заказ в Telegram</button>
+      <button class="btn dark wide" data-checkout>Отправить заказ в Telegram</button>
       <p class="muted small">Оплата и детали — после подтверждения в переписке.</p>
     </footer>
   </aside>`;

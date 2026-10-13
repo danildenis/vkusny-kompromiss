@@ -6,95 +6,82 @@
 <title>Вкусный компромисс — корпусные десерты</title>
 <meta name="description" content="Корпусные десерты ручной работы: выглядят как настоящие фрукты, а внутри — мусс, начинка и хруст. Вам не придётся выбирать.">
 <meta property="og:title" content="Вкусный компромисс — корпусные десерты">
-<meta property="og:description" content="Десерты, которые выглядят как фрукты. Вам не придётся выбирать.">
+<meta property="og:description" content="Корпусные десерты ручной работы: выглядят как настоящие фрукты, а внутри — мусс, начинка и хруст. Вам не придётся выбирать.">
+<meta property="og:image" content="assets/img/logo.png">
+<meta name="theme-color" content="#6C151E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Forum&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23F6E2DC'/%3E%3Ctext x='32' y='43' font-family='Georgia' font-size='32' text-anchor='middle' fill='%23B2463C'%3EВК%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="assets/img/logo.png">
+<script>document.documentElement.classList.add('js');</script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
-<body class="home">
-<svg class="sprite" aria-hidden="true"><defs><symbol id="daisy" viewBox="-50 -50 100 100"><ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(0)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(30)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(60)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(90)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(120)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(150)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(180)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(210)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(240)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(270)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(300)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(330)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
-<circle r="12" fill="#F1BE47"/><circle r="12" fill="url(#dc)"/></symbol>
-<radialGradient id="dc" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FFE08A"/><stop offset="1" stop-color="#D99A22"/></radialGradient></defs><symbol id="sprig" viewBox="0 0 100 220"><path d="M51 220 C49 168 54 104 51 8" stroke="#6E8B5C" stroke-width="2" fill="none" stroke-linecap="round"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(50 196) rotate(-140) scale(1.0)" fill="#7F9B6B"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 176) rotate(-35) scale(1.0)" fill="#93AE7E"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(50 156) rotate(-148) scale(0.95)" fill="#86A272"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 136) rotate(-30) scale(0.92)" fill="#9CB688"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 116) rotate(-152) scale(0.86)" fill="#7F9B6B"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 96) rotate(-26) scale(0.82)" fill="#93AE7E"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 76) rotate(-156) scale(0.74)" fill="#86A272"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 58) rotate(-24) scale(0.66)" fill="#9CB688"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 40) rotate(-160) scale(0.56)" fill="#7F9B6B"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 26) rotate(-22) scale(0.48)" fill="#93AE7E"/>
-<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 12) rotate(-95) scale(0.42)" fill="#86A272"/></symbol></svg>
+<body>
+<div class="curtain" aria-hidden="true"><img src="assets/img/logo.png" alt=""></div>
 <canvas id="gl" aria-hidden="true"></canvas>
 
 <header class="site-head">
-  <div class="wrap">
-    <a class="logo" href="index.html" aria-label="Вкусный компромисс — на главную"><small>Вкусный</small><b>Компромисс</b></a>
-    <nav class="site-nav">
-      <a href="index.html" class="on">Главная</a>
-      <a href="catalog.html">Каталог</a>
-      <a href="#inside">Что внутри</a>
-      <a href="#order">Как заказать</a>
-    </nav>
+  <div class="wrap head-row">
+    <button class="icon-btn menu-btn" aria-label="Меню"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M4 9h16M4 15h16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+    <nav class="nav left" aria-label="Разделы"><a href="index.html" class="on">Главная</a><a href="catalog.html">Каталог</a></nav>
+    <a class="logo-mark" href="index.html" aria-label="Вкусный компромисс — на главную">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48"/></svg>
+      <img src="assets/img/logo.png" alt="Вкусный компромисс" width="74" height="74">
+    </a>
+    <nav class="nav right" aria-label="О десертах"><a href="index.html#inside">Что внутри</a><a href="index.html#order">Как заказать</a></nav>
     <button class="cart-btn" data-open-cart aria-label="Корзина">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
-      <span class="label">Корзина</span><span class="count" data-cart-count>0</span>
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M5 8.5h14l-1.1 10.6a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5 8.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
+      <span class="count" data-cart-count>0</span>
     </button>
-    <button class="icon-btn menu-btn" aria-label="Меню"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
   </div>
 </header>
 
 <main>
   <section class="hero" aria-label="Корпусный десерт Манго">
     <div class="hero-sticky">
-      <div class="hero-halo"></div>
-      <svg class="deco sprig s1"><use href="#sprig"/></svg>
-      <svg class="deco sprig s2"><use href="#sprig"/></svg>
-      <svg class="deco sprig s3"><use href="#sprig"/></svg>
-      <svg class="deco daisy d1"><use href="#daisy"/></svg>
-      <svg class="deco daisy d2"><use href="#daisy"/></svg>
-      <svg class="deco daisy d3"><use href="#daisy"/></svg>
+      <svg class="hero-rings" viewBox="0 0 100 100" aria-hidden="true"><circle class="r1" cx="50" cy="50" r="49.5" pathLength="320"/><circle class="r2" cx="50" cy="50" r="43"/></svg>
+      <h1 class="hero-title">
+        <span class="ht-small"><span class="split"><span>Вкусный</span></span></span>
+        <span class="ht-big" aria-label="Компромисс"><span class="split"><span style="--i:0">К</span></span><span class="split"><span style="--i:1">о</span></span><span class="split"><span style="--i:2">м</span></span><span class="split"><span style="--i:3">п</span></span><span class="split"><span style="--i:4">р</span></span><span class="split"><span style="--i:5">о</span></span><span class="split"><span style="--i:6">м</span></span><span class="split"><span style="--i:7">и</span></span><span class="split"><span style="--i:8">с</span></span><span class="split"><span style="--i:9">с</span></span></span>
+        <span class="ht-tag fade-late">Вам не придётся выбирать</span>
+      </h1>
       <div class="hero-stage"></div>
 
-      <div class="hero-panel" data-from="0" data-to=".12">
-        <p class="eyebrow">Корпусные десерты ручной работы</p>
-        <h1>Выглядит как&nbsp;манго. <em class="ac">На&nbsp;вкус — ещё лучше</em></h1>
-        <p>Бархатный корпус в форме фрукта, а внутри — мусс, начинка и хруст. Вам не придётся выбирать между красивым и вкусным.</p>
-        <div class="actions"><a class="btn" href="catalog.html">Смотреть каталог</a><a class="btn ghost" href="#inside">Что внутри</a></div>
-        <p class="price-note"><span class="dot"></span>9 вкусов · от <b>200 ₽</b> за десерт</p>
+      <div class="hero-foot">
+        <div class="wrap grid">
+          <div class="hf-left fade-late">
+            <p class="eyebrow">Корпусные десерты</p>
+            <p>Выглядят как настоящие фрукты. Внутри — мусс, начинка и хруст.</p>
+          </div>
+          <div class="hf-right fade-late">
+            <span class="price-note">9 вкусов · от <b>200 ₽</b> за десерт</span>
+            <a class="btn" href="catalog.html">Смотреть каталог <span class="arr">→</span></a>
+          </div>
+        </div>
       </div>
-      <div class="hero-panel" data-from=".14" data-to=".36">
-        <p class="eyebrow">Корпусное манго</p>
-        <h2>Разрежем?</h2>
-        <p>Снаружи — тонкий корпус с бархатным покрытием. Внутри — то, ради чего его стоит разрезать.</p>
+      <div class="cue-wrap"><div class="scroll-cue fade-late"><span>Листайте</span><i></i></div></div>
+
+      <div class="hero-panels">
+        <div class="wrap grid">
+          <div class="hero-panel" data-from=".12" data-to=".36">
+            <p class="eyebrow">Корпусное манго</p>
+            <h2>Разрежем<span class="acc">?</span></h2>
+            <p>Снаружи — тонкий корпус с бархатным покрытием. Внутри — то, ради чего его стоит разрезать.</p>
+          </div>
+          <div class="hero-panel right" data-from=".4" data-to=".82">
+            <p class="eyebrow">Слой за слоем</p>
+            <h2>Три текстуры <span class="acc">в одном</span></h2>
+            <p>Хрустящий корпус, лёгкий фруктовый мусс и текучая начинка с кусочками спелого манго.</p>
+          </div>
+          <div class="hero-panel" data-from=".86" data-to="1.01">
+            <p class="eyebrow">Девять вкусов</p>
+            <h2>Попробуйте <span class="acc">все</span></h2>
+            <p>Фисташка, манго, черника, кофейное зерно и другие — для себя или в подарок.</p>
+            <a class="btn" href="catalog.html">В каталог <span class="arr">→</span></a>
+          </div>
+        </div>
       </div>
-      <div class="hero-panel" data-from=".4" data-to=".82">
-        <p class="eyebrow">Слой за слоем</p>
-        <h2>Три текстуры <em class="ac">в&nbsp;одном</em> десерте</h2>
-        <p>Хрустящий корпус, лёгкий фруктовый мусс и текучая начинка с кусочками спелого манго.</p>
-      </div>
-      <div class="hero-panel" data-from=".86" data-to="1.01">
-        <p class="eyebrow">Вам не придётся выбирать</p>
-        <h2>Девять вкусов — <em class="ac">попробуйте все</em></h2>
-        <p>Фисташка, манго, черника, кофейное зерно и другие. Соберите набор для себя или в подарок.</p>
-        <div class="actions"><a class="btn" href="catalog.html">В каталог</a></div>
-      </div>
-      <div class="scroll-cue"><span>Листайте</span><i></i></div>
     </div>
   </section>
   <div class="hero-labels" aria-hidden="true">
@@ -103,97 +90,102 @@
     <div class="hero-label"><span><b>03</b><em>Начинка с кусочками манго</em><i>Начинка</i></span></div>
   </div>
 
-  <section class="about sec" id="inside">
+  <section class="about sec light" id="inside">
     <div class="wrap">
-      <div class="about-top">
-        <div class="reveal">
+      <div class="grid about-top">
+        <div class="a-title reveal">
           <p class="eyebrow">Что такое корпусный десерт</p>
-          <h2>Десерт, который выглядит <em>как&nbsp;фрукт</em></h2>
+          <h2 class="big">Десерт, который выглядит <span class="acc">как настоящий фрукт</span></h2>
         </div>
-        <div class="reveal d2">
+        <div class="a-text reveal d2">
           <p class="about-lead">Корпусные — новый тренд в десертах: с вау-эффектом, сбалансированные и незабываемые. Красиво, вкусно и необычно — идеальный подарок и для взрослых, и для детей.</p>
-          <div class="about-quote">«Каждый день получаем ваши комплименты вкусности десертов! Стараемся, чтобы вы расслаблялись»<small>— из канала «Вкусный компромисс»</small></div>
+          <div class="about-quote">«Каждый день получаем ваши комплименты вкусности десертов! Стараемся, чтобы вы расслаблялись»<small>Из канала «Вкусный компромисс»</small></div>
         </div>
       </div>
-      <div class="layers-row">
-        <div class="layer-item reveal"><div class="ring r1"></div><span class="num">01</span><h3>Корпус</h3><p>Тонкая хрустящая оболочка с бархатным покрытием повторяет форму фрукта — до прожилок и румянца.</p></div>
-        <div class="layer-item reveal d2"><div class="ring r2"></div><span class="num">02</span><h3>Мусс</h3><p>Лёгкий и воздушный: фруктовый, ягодный, сливочный или кофейный — в каждом десерте свой.</p></div>
-        <div class="layer-item reveal d3"><div class="ring r3"></div><span class="num">03</span><h3>Сердце</h3><p>Текучая начинка, ягодный центр, карамель или хрустящий крамбл — самое интересное прячется внутри.</p></div>
+      <div class="grid layers-row">
+        <div class="layer-item reveal"><div class="li-top"><span class="num">01</span><div class="ring r1"></div></div><h3>Корпус</h3><p>Тонкая хрустящая оболочка с бархатным покрытием повторяет форму фрукта — до прожилок и румянца.</p></div>
+        <div class="layer-item reveal d1"><div class="li-top"><span class="num">02</span><div class="ring r2"></div></div><h3>Мусс</h3><p>Лёгкий и воздушный: фруктовый, ягодный, сливочный или кофейный — в каждом десерте свой.</p></div>
+        <div class="layer-item reveal d2"><div class="li-top"><span class="num">03</span><div class="ring r3"></div></div><h3>Сердце</h3><p>Текучая начинка, ягодный центр, карамель или хрустящий крамбл — самое интересное прячется внутри.</p></div>
       </div>
     </div>
   </section>
 
   <section class="hits sec">
     <div class="wrap">
-      <div class="sec-head">
-        <div class="reveal"><p class="eyebrow">Любимые вкусы</p><h2>Наведите — <em class="ac">и&nbsp;загляните внутрь</em></h2></div>
-        <p class="reveal d2">Каждый десерт раскрывается и показывает слои. Нажмите «Состав и КБЖУ», чтобы разобрать его целиком.</p>
+      <div class="grid sec-head">
+        <div class="sh-title reveal"><p class="eyebrow">Любимые вкусы</p><h2 class="big">Наведите — <span class="acc">и загляните внутрь</span></h2></div>
+        <p class="sh-text reveal d2">Каждый десерт раскрывается и показывает слои. Нажмите «Состав и КБЖУ», чтобы разобрать его целиком.</p>
       </div>
       <div class="cards hits-grid"></div>
-      <div class="hits-more"><a class="link-arrow" href="catalog.html">Весь каталог — 9 вкусов <span aria-hidden="true">→</span></a></div>
+      <div class="hits-more reveal"><a class="link-line" href="catalog.html">Весь каталог — 9 вкусов <span aria-hidden="true">→</span></a></div>
     </div>
   </section>
 
-  <section class="sets sec" id="sets">
+  <section class="sets sec green" id="sets">
     <div class="wrap">
-      <div class="sec-head">
-        <div class="reveal"><p class="eyebrow">Наборы</p><h2>Для дегустации <em class="ac">и&nbsp;для праздника</em></h2></div>
-        <p class="reveal d2">Соберите коробку из любимых вкусов — для себя, для гостей или в подарок.</p>
+      <div class="grid sec-head">
+        <div class="sh-title reveal"><p class="eyebrow">Наборы</p><h2 class="big">Для дегустации <span class="acc">и для праздника</span></h2></div>
+        <p class="sh-text reveal d2">Соберите коробку из любимых вкусов — для себя, для гостей или в подарок.</p>
       </div>
-      <div class="sets-grid">
+      <div class="grid sets-grid">
         <article class="set reveal">
           <div>
-            <span class="tag">Попробовать всё</span>
+            <p class="eyebrow">Попробовать всё</p>
             <h3>Мини-набор</h3>
             <p>Несколько разных вкусов, чтобы найти свой. Удобно взять на пробу или порадовать себя вечером.</p>
-            <a class="btn small" href="catalog.html">Собрать набор</a>
+            <a class="btn dark small" href="catalog.html">Собрать набор <span class="arr">→</span></a>
           </div>
-          <div class="box mini"><i style="background:#F7CF45"></i><i style="background:#2F3C72"></i><i style="background:#8CAF4F"></i><i style="background:#D8456D"></i></div>
+          <div class="box mini"><i style="background:#FFB52E"></i><i style="background:#2F3C72"></i><i style="background:#8CAF4F"></i><i style="background:#D8456D"></i></div>
         </article>
         <article class="set reveal d2">
           <div>
-            <span class="tag">В подарок</span>
+            <p class="eyebrow">В подарок</p>
             <h3>Большой набор</h3>
-            <p>Для дня рождения, праздника или команды: яркая коробка, которую хочется сфотографировать перед тем, как открыть.</p>
-            <a class="btn small" href="catalog.html">Собрать набор</a>
+            <p>Для дня рождения, праздника или команды: коробка, которую хочется сфотографировать, прежде чем открыть.</p>
+            <a class="btn dark small" href="catalog.html">Собрать набор <span class="arr">→</span></a>
           </div>
-          <div class="box big"><i style="background:#F3A12E"></i><i style="background:#6E4129"></i><i style="background:#F3D24B"></i><i style="background:#F48FB6"></i><i style="background:#F5D23F"></i><i style="background:#2F3C72"></i><i style="background:#F7EDD3"></i><i style="background:#D8456D"></i><i style="background:#8CAF4F"></i></div>
+          <div class="box big"><i style="background:#FF9418"></i><i style="background:#8E5230"></i><i style="background:#F3D24B"></i><i style="background:#F48FB6"></i><i style="background:#FFE04A"></i><i style="background:#2F3C72"></i><i style="background:#FFF2D6"></i><i style="background:#D8456D"></i><i style="background:#8CAF4F"></i></div>
         </article>
       </div>
     </div>
   </section>
 
-  <section class="how sec" id="order">
+  <section class="how sec light" id="order">
     <div class="wrap">
-      <div class="sec-head">
-        <div class="reveal"><p class="eyebrow">Как заказать</p><h2>Три шага до <em class="ac">сладкого вечера</em></h2></div>
+      <div class="grid sec-head">
+        <div class="sh-title reveal"><p class="eyebrow">Как заказать</p><h2 class="big">Три шага <span class="acc">до сладкого вечера</span></h2></div>
       </div>
-      <div class="steps">
-        <div class="step reveal"><b>1</b><h3>Выберите вкусы</h3><p>Добавьте десерты в корзину — по одному или сразу на целую коробку.</p></div>
-        <div class="step reveal d2"><b>2</b><h3>Оформите заказ</h3><p>Укажите имя, контакт и дату. Мы соберём текст заказа за вас.</p></div>
-        <div class="step reveal d3"><b>3</b><h3>Отправьте в Telegram</h3><p>Заказ уходит Елене в личные сообщения — она подтвердит детали и время.</p></div>
+      <div class="grid">
+        <div class="step reveal"><b>01</b><h3>Выберите вкусы</h3><p>Добавьте десерты в корзину — по одному или сразу на целую коробку.</p></div>
+        <div class="step reveal d1"><b>02</b><h3>Оформите заказ</h3><p>Укажите имя, контакт и дату. Мы соберём текст заказа за вас.</p></div>
+        <div class="step reveal d2"><b>03</b><h3>Отправьте в Telegram</h3><p>Заказ уходит Елене в личные сообщения — она подтвердит детали и время.</p></div>
       </div>
-      <div class="how-cta"><a class="btn brand" href="catalog.html">Выбрать десерты</a><a class="btn ghost" target="_blank" rel="noopener" href="https://t.me/vkusmiss">Канал в Telegram</a></div>
+      <div class="how-cta reveal"><a class="btn dark" href="catalog.html">Выбрать десерты <span class="arr">→</span></a><a class="btn ghost" target="_blank" rel="noopener" href="https://t.me/vkusmiss">Канал в Telegram</a></div>
     </div>
   </section>
 </main>
 
 <footer class="site-foot">
   <div class="wrap">
-    <div class="foot-top">
-      <div>
-        <a class="logo" href="index.html"><small>Вкусный</small><b>Компромисс</b></a>
+    <div class="grid foot-top">
+      <div class="foot-brand">
+        <img src="assets/img/logo.png" alt="Вкусный компромисс" width="96" height="96">
         <p class="foot-tag">Вам не придётся выбирать</p>
       </div>
-      <div>
+      <div class="foot-col first">
         <h4>Заказы</h4>
         <ul><li><a target="_blank" rel="noopener" href="https://t.me/KurbatovaElen">@KurbatovaElen</a></li><li><a target="_blank" rel="noopener" href="https://t.me/malinovskaya_manic">@malinovskaya_manic</a></li></ul>
       </div>
-      <div>
+      <div class="foot-col">
         <h4>Сайт</h4>
-        <ul><li><a href="catalog.html">Каталог</a></li><li><a href="#inside">Что внутри</a></li><li><a target="_blank" rel="noopener" href="https://t.me/vkusmiss">Канал t.me/vkusmiss</a></li></ul>
+        <ul><li><a href="index.html">Главная</a></li><li><a href="catalog.html">Каталог</a></li><li><a href="index.html#order">Как заказать</a></li></ul>
+      </div>
+      <div class="foot-col">
+        <h4>Канал</h4>
+        <ul><li><a target="_blank" rel="noopener" href="https://t.me/vkusmiss">t.me/vkusmiss</a></li></ul>
       </div>
     </div>
+    <div class="foot-word" aria-hidden="true">Компромисс</div>
     <div class="foot-bottom"><span>© Вкусный компромисс</span><span>Демоверсия сайта</span></div>
   </div>
 </footer>

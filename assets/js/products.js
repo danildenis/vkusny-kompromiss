@@ -23,11 +23,11 @@ export const PRODUCTS = [
     desc: 'Сочный, яркий, с кусочками свежего манго. Лёгкий фруктовый мусс и мягкая текучая начинка — идеальный баланс текстур.',
     facts: ['Свежие кусочки спелого манго', 'Освежающий вариант для жаркого дня', 'Реалистичный вид — идеально для фото и сюрпризов'],
     kbju: { k: 245, b: 3.1, j: 12.8, u: 29.6 },
-    three: { shape: 'mango', style: 'book', roll: -.5, tilt: .12, sheen: '#fff0c4',
+    three: { shape: 'mango', style: 'book', roll: -1.05, explodeRoll: .95, tilt: .12, sheen: '#fff0c4',
       layers: [
-        { type: 'shell', color: '#F4E2B0', label: 'Тонкий корпус' },
-        { type: 'mousse', color: '#F8D27A', label: 'Лёгкий фруктовый мусс' },
-        { type: 'confit', color: '#F09A1C', accent: '#FFCF55', chunks: true, label: 'Текучая начинка с кусочками манго' },
+        { type: 'shell', color: '#F2D58E', label: 'Тонкий корпус' },
+        { type: 'mousse', color: '#F5C152', label: 'Лёгкий фруктовый мусс' },
+        { type: 'confit', color: '#EE8A12', accent: '#FFC23A', chunks: true, label: 'Текучая начинка с кусочками манго' },
       ] },
   },
   {
@@ -36,7 +36,7 @@ export const PRODUCTS = [
     desc: 'Чёрная смородина, черника и голубика создают необыкновенный вкус. С лёгкой кислинкой, освежающий и очень летний.',
     facts: ['Яркий ягодный вкус, ягоды голубики', 'Баланс сладости и лёгкой кислинки', 'Воздушный мусс, ягодный центр и хрустящий корпус'],
     kbju: { k: 230, b: 3, j: 12, u: 28 },
-    three: { shape: 'blueberry', style: 'clam', tilt: .5, sheen: '#c9d2ff',
+    three: { shape: 'blueberry', style: 'clam', tilt: .38, sheen: '#c9d2ff',
       layers: [
         { type: 'shell', color: '#3B3B66', label: 'Хрустящий тонкий корпус' },
         { type: 'mousse', color: '#CDBBDD', label: 'Нежный воздушный мусс' },

@@ -56,34 +56,36 @@ export const SHAPES = {
     cz: v => .6 * Math.sin(PI * v) - .3, mod: (v, phi) => 1 + .05 * Math.cos(5 * phi) },
   coffee: { L: .9, R: .62, ax: .52, prof: v => sp(v, .6), mod: (v, phi) => 1 - .3 * coffeeGroove(v, phi) },
   blueberry: { L: .5, R: .6, prof: v => sp(v, 1),
-    y: (v, phi) => -.5 * Math.cos(PI * v) - .2 * smooth(.82, 1, v) + .09 * Math.max(0, Math.cos(5 * phi)) ** 3 * Math.exp(-(((v - .88) / .035) ** 2)) },
+    y: (v, phi) => -.5 * Math.cos(PI * v) - .1 * smooth(.84, 1, v) + .025 * Math.cos(5 * phi) * Math.exp(-(((v - .9) / .04) ** 2)) },
   raspberry: { L: .62, R: .52, prof: v => sp(v, .85) * (.82 + .3 * v), y: v => -.62 * Math.cos(PI * v) - .12 * smooth(.85, 1, v),
     mod: (v, phi, d, s) => d ? .97 + .085 * drupe(s) : 1 },
   lemon: { L: .86, R: .56, prof: v => sp(v, .85), y: v => { const c = Math.cos(PI * v); return -c * (.86 + .16 * Math.abs(c) ** 16); },
     mod: (v, phi, d, s) => d ? 1 + .01 * noise(s[0] * 28, s[1] * 28, s[2] * 28) : 1 },
   pistachio: { L: 1, R: .42, ax: .85, prof: v => sp(v, .72) * (1 - .22 * smooth(.55, 1, v)) * (.9 + .1 * Math.sin(PI * v)), cz: v => .14 * Math.sin(PI * v) - .07 },
   popcorn: { L: .6, R: .62, prof: v => sp(v, 1),
-    mod: (v, phi, d, s) => 1 + .26 * fbm(s[0] * 1.7 + 2, s[1] * 1.7, s[2] * 1.7 + 5, 3) + (d ? .015 * noise(s[0] * 12, s[1] * 12, s[2] * 12) : 0) },
+    mod: (v, phi, d, s) => 1 + .36 * fbm(s[0] * 2.1 + 2, s[1] * 2.1, s[2] * 2.1 + 5, 2) + (d ? .008 * noise(s[0] * 10, s[1] * 10, s[2] * 10) : 0) },
   gum: { L: .57, R: .58, prof: v => sp(v, 1) },
 };
 
 /* ---------- окраска корпуса ---------- */
 const C = h => new THREE.Color(h);
 const PAL = {
-  mango: [C('#FFC62A'), C('#FF9418'), C('#E2392A')],
+  mango: [C('#EFBE1E'), C('#F78C16'), C('#CC2B22')],
   banana: [C('#F3D24B'), C('#C9C552'), C('#6B4520'), C('#3B2614')],
   coffee: [C('#8E5230'), C('#3E2112'), C('#A9643C')],
   blueberry: [C('#2F3C72'), C('#7383B5'), C('#1D2040')],
   raspberry: [C('#D8456D'), C('#EE7C98'), C('#9E2448')],
-  lemon: [C('#FFE04A'), C('#D8D24A'), C('#F4C93A')],
+  lemon: [C('#FFE234'), C('#E2DA44'), C('#FFD21F')],
   pistachio: [C('#8CAF4F'), C('#B6CC72'), C('#8B5E55')],
-  popcorn: [C('#FFF7E2'), C('#F2BC55'), C('#E0A044')],
-  gum: [C('#F48FB6'), C('#FFFFFF'), C('#E36C9B')],
+  popcorn: [C('#FFF4DA'), C('#F4C063'), C('#E8A94A')],
+  gum: [C('#FF9CC4'), C('#FFFFFF'), C('#F27AAE')],
 };
+const MANGO_G = C('#9DAA3A');
 const COLORS = {
   mango(o, v, phi, p, s) {
     const [Y, O, R] = PAL.mango;
     o.copy(Y).lerp(O, clamp(smooth(.25, .95, v) + .15 * fbm(s[0] * 3, s[1] * 3, s[2] * 3)));
+    o.lerp(MANGO_G, smooth(.3, .02, v) * .55);
     const b = clamp(smooth(.1, .8, .55 * Math.cos(phi - PI / 2 - .5) + .45) * smooth(.3, 1, v) + .3 * fbm(s[0] * 2.2, s[1] * 2.2, s[2] * 2.2));
     o.lerp(R, b * .95);
   },
@@ -100,7 +102,8 @@ const COLORS = {
   },
   blueberry(o, v, phi, p, s) {
     const [B, L, D] = PAL.blueberry;
-    o.copy(B).lerp(L, smooth(-.1, .5, fbm(s[0] * 3, s[1] * 3, s[2] * 3)) * .55).lerp(D, smooth(.84, .95, v) * .9);
+    const star = smooth(.86, .93, v + .025 * Math.cos(5 * phi));
+    o.copy(B).lerp(L, smooth(-.1, .5, fbm(s[0] * 3, s[1] * 3, s[2] * 3)) * .55).lerp(D, star * .85);
   },
   raspberry(o, v, phi, p, s) {
     const [B, L, D] = PAL.raspberry; const d = drupe(s);
@@ -301,7 +304,7 @@ function shadowTexture() {
   if (shadowTex) return shadowTex;
   const s = 256, cv = document.createElement('canvas'); cv.width = cv.height = s; const g = cv.getContext('2d');
   const gr = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-  gr.addColorStop(0, 'rgba(70,35,25,.42)'); gr.addColorStop(.45, 'rgba(70,35,25,.18)'); gr.addColorStop(1, 'rgba(70,35,25,0)');
+  gr.addColorStop(0, 'rgba(28,4,8,.5)'); gr.addColorStop(.45, 'rgba(28,4,8,.2)'); gr.addColorStop(1, 'rgba(28,4,8,0)');
   g.fillStyle = gr; g.fillRect(0, 0, s, s);
   shadowTex = new THREE.CanvasTexture(cv);
   return shadowTex;
@@ -310,16 +313,103 @@ function shadowTexture() {
 function layerMaterial(L) {
   const map = layerTexture(L);
   const glossy = L.type === 'confit' || L.type === 'caramel';
-  if (glossy) return new THREE.MeshStandardMaterial({ map, roughness: .16, side: THREE.DoubleSide });
+  if (glossy) return new THREE.MeshStandardMaterial({ map, color: C('#e2d8d0'), roughness: .2, envMapIntensity: .7, side: THREE.DoubleSide });
   const rough = { shell: .78, mousse: .72, cream: .6, crumble: .95, sponge: .92 }[L.type] ?? .7;
-  return new THREE.MeshStandardMaterial({ map, roughness: rough, side: THREE.DoubleSide });
+  return new THREE.MeshStandardMaterial({ map, color: C('#d8cfc8'), roughness: rough, envMapIntensity: .6, side: THREE.DoubleSide });
 }
+/* ---------- натуральная фактура кожуры: шум прямо в шейдере ---------- */
+const SKIN = {
+  mango: { kind: 0, rough: .55, sheen: .0 }, banana: { kind: 1, rough: .5, sheen: .1 }, lemon: { kind: 2, rough: .46, sheen: 0 },
+  blueberry: { kind: 3, rough: .58, sheen: .55 }, raspberry: { kind: 4, rough: .34, sheen: .3 }, pistachio: { kind: 5, rough: .62, sheen: .2 },
+  coffee: { kind: 6, rough: .36, sheen: .1 }, popcorn: { kind: 7, rough: .82, sheen: .1 }, gum: { kind: 8, rough: .22, sheen: 0 },
+};
+const NOISE_GLSL = `
+vec3 vk_m289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 vk_m289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 vk_perm(vec4 x){return vk_m289(((x*34.0)+1.0)*x);}
+vec4 vk_tis(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+float vk_snoise(vec3 v){
+  const vec2 C=vec2(1.0/6.0,1.0/3.0); const vec4 D=vec4(0.0,0.5,1.0,2.0);
+  vec3 i=floor(v+dot(v,C.yyy)); vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz); vec3 l=1.0-g; vec3 i1=min(g.xyz,l.zxy); vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx; vec3 x2=x0-i2+C.yyy; vec3 x3=x0-D.yyy;
+  i=vk_m289(i);
+  vec4 p=vk_perm(vk_perm(vk_perm(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+  float n_=0.142857142857; vec3 ns=n_*D.wyz-D.xzx;
+  vec4 j=p-49.0*floor(p*ns.z*ns.z); vec4 x_=floor(j*ns.z); vec4 y_=floor(j-7.0*x_);
+  vec4 x=x_*ns.x+ns.yyyy; vec4 y=y_*ns.x+ns.yyyy; vec4 h=1.0-abs(x)-abs(y);
+  vec4 b0=vec4(x.xy,y.xy); vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.0+1.0; vec4 s1=floor(b1)*2.0+1.0; vec4 sh=-step(h,vec4(0.0));
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy; vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x); vec3 p1=vec3(a0.zw,h.y); vec3 p2=vec3(a1.xy,h.z); vec3 p3=vec3(a1.zw,h.w);
+  vec4 nr=vk_tis(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3))); p0*=nr.x; p1*=nr.y; p2*=nr.z; p3*=nr.w;
+  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0); m=m*m;
+  return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}
+// гасим мелкий шум, когда десерт маленький на экране (без мерцания)
+float vk_aa(vec3 p, float f){ float w=length(fwidth(p))*f; return 1.0-smoothstep(0.35,1.0,w); }
+void vk_skin(vec3 p, inout vec3 col, out float h, out float rm){
+  h=0.0; rm=1.0;
+  if(uKind==0){ // манго: гладкая кожица с мелкими светлыми крапинками
+    float a=vk_aa(p,55.0); float dots=smoothstep(.6,.82,vk_snoise(p*55.0))*a;
+    col=mix(col, col*vec3(1.02,1.06,.82)+vec3(.02,.02,.0), dots*.3);
+    col*=.96+.08*vk_snoise(p*4.0);
+    h=vk_snoise(p*3.0)*.003-dots*.0016; rm=1.0+dots*.15;
+  } else if(uKind==1){ // банан: продольные волокна и веснушки
+    float f=vk_snoise(vec3(p.x*34.0,p.y*2.5,p.z*34.0))*vk_aa(p,34.0);
+    float fr=smoothstep(.6,.8,vk_snoise(p*26.0+3.0))*vk_aa(p,26.0);
+    col*=1.0+f*.05; col=mix(col,vec3(.22,.12,.05),fr*.8);
+    h=f*.0022-fr*.0012; rm=1.0+fr*.4;
+  } else if(uKind==2){ // лимон: поры цедры
+    float a=vk_aa(p,80.0); float pits=smoothstep(.2,.9,vk_snoise(p*80.0))*a;
+    col*=1.0-pits*.03; col*=.98+.04*vk_snoise(p*5.0);
+    h=-pits*.002+vk_snoise(p*5.0)*.003; rm=.9+pits*.4;
+  } else if(uKind==3){ // черника: восковой налёт
+    float b=vk_snoise(p*9.0)*.5+.5; float fine=vk_snoise(p*60.0)*vk_aa(p,60.0);
+    col=mix(col,col*1.25+vec3(.08,.1,.16),b*.45+fine*.08);
+    h=vk_snoise(p*24.0)*.0012; rm=1.0+b*.3;
+  } else if(uKind==4){ // малина: блестящие костянки с переливом
+    col*=.93+.12*vk_snoise(p*16.0); h=vk_snoise(p*70.0)*.0008*vk_aa(p,70.0);
+  } else if(uKind==5){ // фисташка: морщинистая кожица
+    float w=abs(vk_snoise(vec3(p.x*16.0,p.y*5.0,p.z*16.0)));
+    col*=.9+.16*(1.0-w); h=-w*.006+vk_snoise(p*60.0)*.0006*vk_aa(p,60.0); rm=1.0+w*.2;
+  } else if(uKind==6){ // кофейное зерно: обжарка, маслянистый блеск
+    float n=vk_snoise(p*30.0)*vk_aa(p,30.0); col*=.9+.14*n+.06*vk_snoise(p*6.0);
+    h=vk_snoise(p*9.0)*.003+n*.0012; rm=1.0-n*.2;
+  } else if(uKind==7){ // попкорн: рыхлая поверхность
+    float n=vk_snoise(p*14.0); col*=.96+.06*vk_snoise(p*40.0)*vk_aa(p,40.0); h=n*.0025; rm=1.0;
+  } else { // жвачка: глянец с искрой
+    float sp=smoothstep(.75,.9,vk_snoise(p*90.0))*vk_aa(p,90.0); col=mix(col,vec3(1.0),sp*.5); h=vk_snoise(p*5.0)*.002;
+  }
+}
+vec3 vk_bump(vec3 n, float h){
+  vec3 sx=dFdx(-vViewPosition), sy=dFdy(-vViewPosition);
+  float dx=dFdx(h), dy=dFdy(h);
+  vec3 r1=cross(sy,n), r2=cross(n,sx); float det=dot(sx,r1);
+  vec3 g=sign(det)*(dx*r1+dy*r2);
+  return normalize(abs(det)*n-g);
+}
+`;
 function exteriorMaterial(spec) {
-  if (spec.finish === 'gloss') return new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .46, bumpMap: spray(), bumpScale: .02, side: THREE.DoubleSide });
-  return new THREE.MeshPhysicalMaterial({
-    vertexColors: true, roughness: .66, metalness: 0, sheen: .42, sheenRoughness: .6,
-    sheenColor: C(spec.sheen || '#fff4e0'), bumpMap: spray(), bumpScale: .1, side: THREE.DoubleSide,
+  const sk = SKIN[spec.shape] || { kind: 8, rough: .5, sheen: 0 };
+  const mat = new THREE.MeshPhysicalMaterial({
+    vertexColors: true, roughness: sk.rough, metalness: 0,
+    sheen: sk.sheen, sheenRoughness: .5, sheenColor: C(spec.sheen || '#fff4e0'), side: THREE.DoubleSide,
   });
+  mat.onBeforeCompile = sh => {
+    sh.uniforms.uKind = { value: sk.kind };
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vObj;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position;');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vObj;\nuniform int uKind;\n' + NOISE_GLSL)
+      .replace('#include <color_fragment>', '#include <color_fragment>\nfloat vkH; float vkR; vec3 vkC = diffuseColor.rgb; vk_skin(vObj, vkC, vkH, vkR); diffuseColor.rgb = vkC;')
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = clamp(roughnessFactor * vkR, .05, 1.0);')
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nnormal = vk_bump(normal, vkH * .32);');
+  };
+  mat.envMapIntensity = .8;
+  mat.customProgramCacheKey = () => 'vk-skin-' + sk.kind;
+  return mat;
 }
 
 /* ---------- сборка десерта ---------- */
@@ -360,6 +450,7 @@ export function createDessert(product, opts = {}) {
   const qRoll = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), spec.roll || 0);
   const qTilt = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), spec.tilt || 0);
   pivot.quaternion.copy(qTilt).multiply(qRoll).multiply(qBase);
+  const qRollE = new THREE.Quaternion(), Z = new THREE.Vector3(0, 0, 1);
 
   const R = shape.R, Y = new THREE.Vector3(0, 1, 0);
   let poseA, poseB, arcA = new THREE.Vector3();
@@ -386,6 +477,8 @@ export function createDessert(product, opts = {}) {
     B.group.position.copy(poseB.pos).multiplyScalar(o);
     B.group.quaternion.slerpQuaternions(I, poseB.q, o);
     const e = ease(clamp(state.explode)), h = ease(clamp(state.hideA));
+    // при раскладке по слоям десерт встаёт вертикальнее — так слои крупнее и не налезают друг на друга
+    if (spec.explodeRoll) { qRollE.setFromAxisAngle(Z, (spec.roll || 0) + spec.explodeRoll * e); pivot.quaternion.copy(qTilt).multiply(qRollE).multiply(qBase); }
     // половина A уходит, половина B встаёт в центр и раскладывается
     A.group.scale.setScalar(Math.max(.001, 1 - h));
     A.group.position.addScaledVector(opts.hideVec || new THREE.Vector3(0, -1, 0), h);
@@ -431,8 +524,8 @@ export function createDessert(product, opts = {}) {
 
 export function addLights(scene, env) {
   scene.environment = env;
-  const key = new THREE.DirectionalLight('#fff3e8', 2.4); key.position.set(2.5, 4.5, 5); scene.add(key);
+  const key = new THREE.DirectionalLight('#fff3e8', 2.1); key.position.set(2.5, 4.5, 5); scene.add(key);
   const fill = new THREE.DirectionalLight('#fff0f2', 1.1); fill.position.set(-4.5, 1, 4); scene.add(fill);
   const rim = new THREE.DirectionalLight('#ffffff', 1.8); rim.position.set(-2, 3.5, -4.5); scene.add(rim);
-  scene.add(new THREE.HemisphereLight('#fffaf3', '#ecd9cf', .9));
+  scene.add(new THREE.HemisphereLight('#fffaf3', '#c98a7e', .6));
 }

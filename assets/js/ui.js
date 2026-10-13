@@ -9,7 +9,7 @@ export const isTouch = matchMedia('(hover: none)').matches;
 
 // 3D-вид одного десерта внутри HTML-элемента
 export function dessertView(el, product, opts = {}) {
-  const st = { open: 0, explode: 0, hide: 0, tOpen: opts.open ?? 0, tExplode: 0, tHide: 0 };
+  const st = { open: 0, explode: 0, hide: 0, tOpen: opts.open ?? 0, tExplode: 0, tHide: 0, app: opts.revealEl ? 0 : 1 };
   const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
   const phase = Math.random() * 10;
   let d;
@@ -27,11 +27,19 @@ export function dessertView(el, product, opts = {}) {
       st.open += (st.tOpen - st.open) * k; st.explode += (st.tExplode - st.explode) * k; st.hide += (st.tHide - st.hide) * k;
       ptr.x += (ptr.tx - ptr.x) * k; ptr.y += (ptr.ty - ptr.y) * k;
       d.set(st.open, st.explode, st.hide);
+      // десерт появляется вместе с карточкой
+      const ready = !opts.revealEl || (opts.revealEl.classList.contains('in') && document.documentElement.classList.contains('loaded'));
+      if (ready && st.since == null) st.since = t;
+      const shown = ready && t - st.since > .35;
+      st.app += ((shown ? 1 : 0) - st.app) * (1 - Math.exp(-dt * 2.6));
+      const a = st.app, pop = a >= .999 ? 1 : 1 + 1.6 * Math.pow(a - 1, 3) + .9 * Math.pow(a - 1, 2);
+      d.root.scale.setScalar(Math.max(.001, pop));
       d.root.rotation.y = Math.sin(t * .55 + phase) * .16 * (1 - st.explode * .6) + ptr.x * .35;
       d.root.rotation.x = ptr.y * .18;
-      d.root.position.y = Math.sin(t * 1.25 + phase) * .025;
+      d.root.position.y = Math.sin(t * 1.25 + phase) * .025 - (1 - a) * .5;
+      d.root.rotation.y += (1 - a) * -1.6;
       const cam = view.camera, aspect = rect.width / rect.height;
-      const fit = (opts.fit ?? .9) * (1 + st.explode * (opts.explodeZoom ?? .45));
+      const fit = (opts.fit ?? .8) * (1 + st.explode * (opts.explodeZoom ?? .45));
       let dist = d.radius * fit / Math.sin(THREE.MathUtils.degToRad(cam.fov / 2));
       if (aspect < 1) dist /= Math.max(aspect, .55);
       const el2 = opts.elev ?? .2;
@@ -45,10 +53,11 @@ export function dessertView(el, product, opts = {}) {
   return view;
 }
 
-export function cardHTML(p) {
-  return `<article class="card" data-id="${p.id}" style="--tint:${p.tint};--accent:${p.accent}">
+export function cardHTML(p, i = 0) {
+  return `<article class="card reveal${i % 3 ? ' d' + (i % 3) : ''}" data-id="${p.id}" style="--tint:${p.tint};--accent:${p.accent}">
     <div class="card-stage" data-stage>
       <span class="card-hint">${isTouch ? 'Нажмите' : 'Наведите'} — разрежем</span>
+      <span class="card-num">${String(i + 1).padStart(2, '0')}</span>
       <ul class="card-layers">${p.three.layers.map(l => `<li><i style="background:${l.color}"></i>${l.label}</li>`).join('')}</ul>
     </div>
     <div class="card-body">
@@ -65,7 +74,7 @@ export function cardHTML(p) {
 export function bindCard(card, stage, modal) {
   const p = byId(card.dataset.id);
   const stageEl = card.querySelector('[data-stage]');
-  const view = stage.add(dessertView(stageEl, p, { quality: .75 }));
+  const view = stage.add(dessertView(stageEl, p, { quality: .8, revealEl: card }));
   card._view = view;
   const setOpen = v => { view.setOpen(v); view.setExplode(v ? .14 : 0); card.classList.toggle('is-open', !!v); };
   if (isTouch) {
@@ -113,10 +122,10 @@ export function mountModal() {
 
   function renderInfo(p) {
     info.innerHTML = `
-      <p class="eyebrow">Корпусный десерт</p>
+      <p class="eyebrow">Корпусный десерт · ${rub(p.price)}</p>
       <h2>${p.name}</h2>
       <p class="modal-short">${p.short}</p>
-      <p>${p.desc}</p>
+      <p class="modal-desc">${p.desc}</p>
       <h4>Что внутри</h4>
       <ol class="layer-list">${p.three.layers.map((l, i) => `<li><i style="background:${l.color}"></i><span>${l.label}</span><em>${String(i + 1).padStart(2, '0')}</em></li>`).join('')}</ol>
       <h4>КБЖУ на 100 г</h4>
@@ -128,7 +137,7 @@ export function mountModal() {
       <ul class="facts">${p.facts.map(f => `<li>${f}</li>`).join('')}</ul>
       <div class="modal-buy">
         <div class="stepper big"><button type="button" data-dec aria-label="Меньше">−</button><span data-qty>1</span><button type="button" data-inc aria-label="Больше">+</button></div>
-        <button class="btn" data-add>В корзину · <span data-sum>${rub(p.price)}</span></button>
+        <button class="btn dark" data-add>В корзину · <span data-sum>${rub(p.price)}</span></button>
       </div>`;
     const upd = () => { info.querySelector('[data-qty]').textContent = qty; info.querySelector('[data-sum]').textContent = rub(p.price * qty); };
     info.querySelector('[data-inc]').onclick = () => { qty++; upd(); };
@@ -164,19 +173,48 @@ export function toast(msg) {
 }
 
 export function initPage() {
+  const html = document.documentElement;
   mountCart();
   const modal = mountModal();
   const stage = new Stage(document.getElementById('gl'));
-  // шапка: тень при скролле, мобильное меню
+
+  // занавес: логотип появляется, затем занавес уходит вверх
+  const reveal = () => setTimeout(() => html.classList.add('loaded'), 650);
+  Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(r => setTimeout(r, 1400))]).then(reveal);
+  addEventListener('pageshow', e => { if (e.persisted) { html.classList.remove('leaving'); html.classList.add('loaded'); } });
+
+  // плавный уход на другую страницу
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin) return;
+    const samePage = url.pathname === location.pathname || (url.pathname.endsWith('/') && location.pathname.endsWith('index.html')) || (location.pathname.endsWith('/') && url.pathname.endsWith('index.html'));
+    if (samePage) {
+      if (a.classList.contains('logo-mark')) { e.preventDefault(); boop(a); scrollTo({ top: 0, behavior: 'smooth' }); }
+      else if (url.hash) { const t = document.querySelector(url.hash); if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); } }
+      html.classList.remove('menu-open');
+      return;
+    }
+    e.preventDefault();
+    if (a.classList.contains('logo-mark')) boop(a);
+    html.classList.remove('menu-open');
+    html.classList.add('leaving'); html.classList.remove('loaded');
+    setTimeout(() => { location.href = a.href; }, 700);
+  });
+  const boop = el => { el.classList.remove('boop'); void el.offsetWidth; el.classList.add('boop'); };
+
+  // шапка
   const head = document.querySelector('.site-head');
   const onScroll = () => head.classList.toggle('scrolled', scrollY > 10);
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
-  document.querySelector('.menu-btn')?.addEventListener('click', () => document.documentElement.classList.toggle('menu-open'));
-  document.querySelectorAll('.site-nav a').forEach(a => a.addEventListener('click', () => document.documentElement.classList.remove('menu-open')));
+  document.querySelector('.menu-btn')?.addEventListener('click', () => html.classList.toggle('menu-open'));
+
   // появление блоков
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15 });
-  document.querySelectorAll('.reveal').forEach(n => io.observe(n));
-  return { stage, modal };
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+  const watch = () => document.querySelectorAll('.reveal:not(.in)').forEach(n => io.observe(n));
+  watch();
+  return { stage, modal, watch };
 }
 
 export { clamp };
