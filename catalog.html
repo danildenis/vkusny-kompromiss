@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Каталог — Вкусный компромисс</title>
+<meta name="description" content="Девять корпусных десертов: фисташка, манго, черника, кофейное зерно, малина, банан, лимон, жвачка и попкорн.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23F6E2DC'/%3E%3Ctext x='32' y='43' font-family='Georgia' font-size='32' text-anchor='middle' fill='%23B2463C'%3EВК%3C/text%3E%3C/svg%3E">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body class="catalog-page">
+<svg class="sprite" aria-hidden="true"><defs><symbol id="daisy" viewBox="-50 -50 100 100"><ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(0)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(30)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(60)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(90)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(120)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(150)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(180)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(210)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(240)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(270)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(300)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<ellipse cx="0" cy="-25" rx="7.5" ry="19" transform="rotate(330)" fill="#FFFDFB" stroke="#E9DCD4" stroke-width="1"/>
+<circle r="12" fill="#F1BE47"/><circle r="12" fill="url(#dc)"/></symbol>
+<radialGradient id="dc" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FFE08A"/><stop offset="1" stop-color="#D99A22"/></radialGradient></defs><symbol id="sprig" viewBox="0 0 100 220"><path d="M51 220 C49 168 54 104 51 8" stroke="#6E8B5C" stroke-width="2" fill="none" stroke-linecap="round"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(50 196) rotate(-140) scale(1.0)" fill="#7F9B6B"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 176) rotate(-35) scale(1.0)" fill="#93AE7E"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(50 156) rotate(-148) scale(0.95)" fill="#86A272"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 136) rotate(-30) scale(0.92)" fill="#9CB688"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 116) rotate(-152) scale(0.86)" fill="#7F9B6B"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 96) rotate(-26) scale(0.82)" fill="#93AE7E"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 76) rotate(-156) scale(0.74)" fill="#86A272"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 58) rotate(-24) scale(0.66)" fill="#9CB688"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 40) rotate(-160) scale(0.56)" fill="#7F9B6B"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(52 26) rotate(-22) scale(0.48)" fill="#93AE7E"/>
+<path d="M0 0 C9 -9 27 -10 40 0 C27 10 9 9 0 0Z" transform="translate(51 12) rotate(-95) scale(0.42)" fill="#86A272"/></symbol></svg>
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="Вкусный компромисс — на главную"><small>Вкусный</small><b>Компромисс</b></a>
+    <nav class="site-nav">
+      <a href="index.html">Главная</a>
+      <a href="catalog.html" class="on">Каталог</a>
+      <a href="index.html#inside">Что внутри</a>
+      <a href="index.html#order">Как заказать</a>
+    </nav>
+    <button class="cart-btn" data-open-cart aria-label="Корзина">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+      <span class="label">Корзина</span><span class="count" data-cart-count>0</span>
+    </button>
+    <button class="icon-btn menu-btn" aria-label="Меню"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  </div>
+</header>
+
+<main>
+  <section class="page-top">
+    <svg class="deco sprig s2"><use href="#sprig"/></svg>
+    <svg class="deco daisy d1"><use href="#daisy"/></svg>
+    <div class="wrap">
+      <p class="eyebrow">Каталог</p>
+      <h1>Девять вкусов. <em class="ac">Выбирать не&nbsp;придётся</em></h1>
+      <p>Наведите на десерт — он раскроется и покажет, что внутри. Цены указаны за один десерт.</p>
+    </div>
+  </section>
+
+  <section class="catalog">
+    <div class="wrap">
+      <div class="chips" role="toolbar" aria-label="Фильтр"></div>
+      <div class="cards catalog-grid"></div>
+    </div>
+  </section>
+
+  <section class="sets sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="eyebrow">Наборы</p><h2>Мини-наборы для дегустации <em class="ac">и&nbsp;большие — для праздника</em></h2></div>
+        <p>Добавьте в корзину нужные вкусы — Елена соберёт их в коробку. Количество ограничено, лучше заказывать заранее.</p>
+      </div>
+      <a class="btn" target="_blank" rel="noopener" href="https://t.me/KurbatovaElen">Спросить про набор в Telegram</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <a class="logo" href="index.html"><small>Вкусный</small><b>Компромисс</b></a>
+        <p class="foot-tag">Вам не придётся выбирать</p>
+      </div>
+      <div>
+        <h4>Заказы</h4>
+        <ul><li><a target="_blank" rel="noopener" href="https://t.me/KurbatovaElen">@KurbatovaElen</a></li><li><a target="_blank" rel="noopener" href="https://t.me/malinovskaya_manic">@malinovskaya_manic</a></li></ul>
+      </div>
+      <div>
+        <h4>Сайт</h4>
+        <ul><li><a href="index.html">Главная</a></li><li><a href="index.html#inside">Что внутри</a></li><li><a target="_blank" rel="noopener" href="https://t.me/vkusmiss">Канал t.me/vkusmiss</a></li></ul>
+      </div>
+    </div>
+    <div class="foot-bottom"><span>© Вкусный компромисс</span><span>Демоверсия сайта</span></div>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/catalog.js"></script>
+</body>
+</html>
