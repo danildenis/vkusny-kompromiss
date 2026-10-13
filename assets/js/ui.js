@@ -20,7 +20,7 @@ export function dessertView(el, product, opts = {}) {
       view.scene = new THREE.Scene();
       addLights(view.scene, stage.env);
       view.camera = new THREE.PerspectiveCamera(opts.fov ?? 24, 1, .1, 60);
-      createPhotoDessert(product, { grid: opts.grid ?? 120 }).then(dd => { if (view.disposed) return dd.dispose(); d = view.dessert = dd; view.scene.add(dd.root); });
+      createPhotoDessert(product, { grid: opts.grid ?? 120, layers: opts.layers }).then(dd => { if (view.disposed) return dd.dispose(); d = view.dessert = dd; dd.setOpacity(0); view.scene.add(dd.root); });
     },
     update(dt, t, rect) {
       if (!d) return;
@@ -32,13 +32,16 @@ export function dessertView(el, product, opts = {}) {
       const ready = !opts.revealEl || (opts.revealEl.classList.contains('in') && document.documentElement.classList.contains('loaded'));
       if (ready && st.since == null) st.since = t;
       const shown = ready && t - st.since > .35;
-      st.app += ((shown ? 1 : 0) - st.app) * (1 - Math.exp(-dt * 2.6));
-      const a = st.app, pop = a >= .999 ? 1 : 1 + 1.6 * Math.pow(a - 1, 3) + .9 * Math.pow(a - 1, 2);
-      d.root.scale.setScalar(Math.max(.001, pop));
+      // мягкое проявление: прозрачность, лёгкий подъём — без «выпрыгивания» из точки
+      st.app += ((shown ? 1 : 0) - st.app) * (1 - Math.exp(-dt * 2.2));
+      if (document.documentElement.classList.contains('shot')) st.app = 1;
+      const a = st.app > .998 ? 1 : st.app, ae = a * a * (3 - 2 * a);
+      d.setOpacity(ae);
+      d.root.scale.setScalar(.94 + .06 * ae);
       d.root.rotation.y = Math.sin(t * .55 + phase) * .16 * (1 - st.explode * .6) + ptr.x * .35;
       d.root.rotation.x = ptr.y * .18;
-      d.root.position.y = Math.sin(t * 1.25 + phase) * .025 - (1 - a) * .5;
-      d.root.rotation.x += (1 - a) * .25;
+      d.root.position.y = Math.sin(t * 1.25 + phase) * .025 - (1 - ae) * .16;
+      d.root.rotation.x += (1 - ae) * .12;
       const cam = view.camera, aspect = rect.width / rect.height;
       const fit = (opts.fit ?? .8) * (1 + st.explode * (opts.explodeZoom ?? .45));
       let dist = d.radius * fit / Math.sin(THREE.MathUtils.degToRad(cam.fov / 2));
@@ -75,9 +78,10 @@ export function cardHTML(p, i = 0) {
 export function bindCard(card, stage, modal) {
   const p = byId(card.dataset.id);
   const stageEl = card.querySelector('[data-stage]');
-  const view = stage.add(dessertView(stageEl, p, { grid: 150, revealEl: card }));
+  const view = stage.add(dessertView(stageEl, p, { grid: 160, revealEl: card, fit: p.three.fit ?? .8 }));
   card._view = view;
-  const setOpen = v => { view.setOpen(v); view.setExplode(v ? .14 : 0); card.classList.toggle('is-open', !!v); };
+  const setOpen = v => { view.setOpen(v); card.classList.toggle('is-open', !!v); };
+  if (/[?&]open\b/.test(location.search)) setOpen(1);
   if (isTouch) {
     stageEl.addEventListener('click', () => setOpen(card.classList.contains('is-open') ? 0 : 1));
   } else {
@@ -155,7 +159,7 @@ export function mountModal() {
     document.documentElement.classList.add('modal-open');
     if (!stage) stage = new Stage(el.querySelector('.modal-gl'));
     if (view) { stage.remove(view); view.dispose(); }
-    view = stage.add(dessertView(stageEl, p, { grid: 170, fit: .95, explodeZoom: .3, elev: .12 }));
+    view = stage.add(dessertView(stageEl, p, { grid: 180, layers: true, fit: .95, explodeZoom: .3, elev: .12 }));
     stage.paused = false;
     setMode(0);
     setTimeout(() => current === p && setMode(1), 450);

@@ -24,7 +24,6 @@ let d, ps = 0, t0 = null;
 const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
 addEventListener('pointermove', e => { ptr.tx = e.clientX / innerWidth - .5; ptr.ty = e.clientY / innerHeight - .5; }, { passive: true });
 const v3 = new THREE.Vector3();
-const backOut = x => 1 + 2.4 * Math.pow(x - 1, 3) + 1.4 * Math.pow(x - 1, 2);
 
 stage.add({
   el: heroStage,
@@ -32,28 +31,29 @@ stage.add({
     this.scene = new THREE.Scene();
     addLights(this.scene, st.env);
     this.camera = new THREE.PerspectiveCamera(22, 1, .1, 80);
-    createPhotoDessert(byId('mango'), { grid: 220 }).then(dd => { d = dd; this.scene.add(d.root); d.root.scale.setScalar(.001); });
+    createPhotoDessert(byId('mango'), { grid: 230, layers: true }).then(dd => { d = dd; d.setOpacity(0); this.scene.add(d.root); });
   },
   update(dt, t, rect) {
     if (!d) return;
     // ждём, пока уйдёт занавес
-    if (t0 === null) { if (!html.classList.contains('loaded') && DBG === null) { d.root.scale.setScalar(.001); return; } t0 = t + .2; }
+    if (t0 === null) { if (!html.classList.contains('loaded') && DBG === null) return; t0 = t + .15; }
     const r = hero.getBoundingClientRect();
     const p = DBG ?? clamp(-r.top / (r.height - innerHeight));
     ps += (p - ps) * (1 - Math.exp(-dt * 7));
     if (DBG !== null) { ps = p; t0 = -10; }
     ptr.x += (ptr.tx - ptr.x) * .05; ptr.y += (ptr.ty - ptr.y) * .05;
 
-    // появление: падает сверху, вращаясь, и мягко пружинит
-    const i = clamp((t - t0) / 2.1), ie = 1 - Math.pow(1 - i, 4);
+    // появление: проявляется из прозрачности, медленно поднимаясь и доворачиваясь
+    const i = clamp((t - t0) / 2.4), ie = 1 - Math.pow(1 - i, 3), fade = smooth(0, .75, i);
     const open = smooth(.08, .3, ps) * (1 - smooth(.86, .98, ps));
-    const explode = smooth(.34, .6, ps) * (1 - smooth(.8, .92, ps));
+    const explode = smooth(.34, .62, ps) * (1 - smooth(.78, .92, ps));
     d.set(open, explode, explode);
-    d.root.scale.setScalar(Math.max(.001, .25 + .75 * backOut(i)));
-    d.root.rotation.y = (1 - ie) * -3.4 + Math.sin(t * .4) * .14 * (1 - explode) + ptr.x * .35 - explode * .2;
-    d.root.rotation.x = (1 - ie) * .6 + ptr.y * .14 + explode * .08;
-    d.root.rotation.z = (1 - ie) * .5;
-    d.root.position.y = (1 - ie) * 2.2 + Math.sin(t * 1.05) * .035 * ie;
+    d.setOpacity(fade);
+    d.root.scale.setScalar(.92 + .08 * ie);
+    d.root.rotation.y = (1 - ie) * -.55 + Math.sin(t * .4) * .14 * (1 - explode) + ptr.x * .35 - explode * .2;
+    d.root.rotation.x = (1 - ie) * .12 + ptr.y * .14 + explode * .08;
+    d.root.rotation.z = (1 - ie) * .06;
+    d.root.position.y = -(1 - ie) * .35 + Math.sin(t * 1.05) * .035 * ie;
 
     // камера: десерт крупно по центру
     const cam = this.camera, W = rect.width, H = rect.height, m = mobile();
