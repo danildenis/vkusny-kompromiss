@@ -7,36 +7,51 @@ import { cart, mountCart, flyToCart } from './cart.js';
 export const isTouch = matchMedia('(hover: none)').matches;
 
 // Десерт из кадров Blender внутри HTML-элемента: 0 — целый, 1 — в разрезе, 2 — по слоям
+// Движение по времени: мягкий старт, ровная середина, мягкая остановка; смена цели — без рывка по скорости
 export function dessertView(el, product, opts = {}) {
   const cv = document.createElement('canvas'); cv.className = 'dessert-frames'; el.appendChild(cv);
   const ctx = cv.getContext('2d'), set = frameSet(product.id);
-  const st = { a: 0, open: opts.open ?? 0, explode: 0, app: opts.revealEl ? 0 : 1, since: null };
-  const ptr = { x: 0, y: 0, tx: 0, ty: 0 }, phase = Math.random() * 10;
-  set.load(0, opts.all ? 99 : Math.ceil((set.meta?.frames ?? 36) / 2));
+  const st = { a: 0, v: 0, from: 0, to: 0, v0: 0, ts: 0, T: 0, open: opts.open ?? 0, explode: 0, app: opts.revealEl ? 0 : 1, since: null, key: '' };
+  const ptr = { x: 0, y: 0, tx: 0, ty: 0 }, phase = Math.random() * 10, D = opts.duration ?? .95;
   const view = {
     el, product,
     frame(dt, t) {
+      set.load();
       if (!set.meta || !set.frames[0]) return;
       const target = st.explode ? 2 : st.open ? 1 : 0;
-      st.a += (target - st.a) * (1 - Math.exp(-dt * (opts.speed ?? 5)));
-      if (Math.abs(target - st.a) < .002) st.a = target;
+      if (target !== st.to && (set.done || target < st.a)) {
+        const d = Math.abs(target - st.a);
+        Object.assign(st, { from: st.a, to: target, v0: st.v, ts: t, T: D * (.6 + .4 * Math.min(1, d)) });
+      }
+      if (st.a !== st.to || st.v) {
+        const u = Math.min(1, (t - st.ts) / st.T), u2 = u * u, u3 = u2 * u;
+        if (u >= 1) { st.a = st.to; st.v = 0; }
+        else {
+          st.a = (2 * u3 - 3 * u2 + 1) * st.from + (u3 - 2 * u2 + u) * st.T * st.v0 + (3 * u2 - 2 * u3) * st.to;
+          st.v = ((6 * u2 - 6 * u) * st.from + (3 * u2 - 4 * u + 1) * st.T * st.v0 + (6 * u - 6 * u2) * st.to) / st.T;
+        }
+      }
       ptr.x += (ptr.tx - ptr.x) * (1 - Math.exp(-dt * 5)); ptr.y += (ptr.ty - ptr.y) * (1 - Math.exp(-dt * 5));
       const ready = !opts.revealEl || (opts.revealEl.classList.contains('in') && document.documentElement.classList.contains('loaded'));
       if (ready && st.since == null) st.since = t;
       if (document.documentElement.classList.contains('shot')) st.app = 1;
       st.app += ((ready && t - st.since > .25 ? 1 : 0) - st.app) * (1 - Math.exp(-dt * 2.4));
-      const W = el.clientWidth, H = el.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
-      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
       const ae = st.app > .998 ? 1 : st.app * st.app * (3 - 2 * st.app);
-      const sz = Math.min(W, H) * (opts.fill ?? 1.02) * (1 - (opts.shrink ?? .17) * smooth(0, 1, st.a)), dw = sz, dh = sz;
+      // покачивание, отклик на курсор и появление — сдвигом холста, без перерисовки
       const bob = Math.sin(t * 1.25 + phase) * 3 * (1 - st.a / 2);
-      const dx = (W - dw) / 2 + ptr.x * 10, dy = H * (opts.cy ?? .47) - dh / 2 + bob + ptr.y * 6 + (1 - ae) * 24;
+      cv.style.transform = `translate3d(${(ptr.x * 10).toFixed(2)}px, ${(bob + ptr.y * 6 + (1 - ae) * 24).toFixed(2)}px, 0)`;
+      cv.style.opacity = ae.toFixed(3);
+      const W = el.clientWidth, H = el.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+      const key = `${st.a.toFixed(4)}|${W}|${H}|${set.upto}`;
+      if (key === st.key) return;
+      st.key = key;
+      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+      const sz = Math.min(W, H) * (opts.fill ?? 1.02) * (1 - (opts.shrink ?? .17) * smooth(0, 1, st.a)), dw = sz, dh = sz;
+      const dx = (W - dw) / 2, dy = H * (opts.cy ?? .47) - dh / 2;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      ctx.globalAlpha = ae;
       drawFrames(ctx, set, st.a, dx, dy, dw, dh, .18);
-      ctx.globalAlpha = 1;
     },
-    setOpen(v) { st.open = v; if (v) set.load(0, 99); }, setExplode(v) { st.explode = v; if (v) set.load(0, 99); }, setHide() {},
+    setOpen(v) { st.open = v; }, setExplode(v) { st.explode = v; }, setHide() {},
     pointer(x, y) { ptr.tx = x; ptr.ty = y; },
     dispose() { view.disposed = true; cv.remove(); },
   };
@@ -161,7 +176,7 @@ export function mountModal() {
     document.documentElement.classList.add('modal-open');
     if (!stage) stage = createStage();
     if (view) { stage.remove(view); view.dispose(); }
-    view = stage.add(dessertView(stageEl, p, { all: true, fill: .96, cy: .46, speed: 4 }));
+    view = stage.add(dessertView(stageEl, p, { fill: .96, cy: .46, duration: 1.1 }));
     setMode(0);
     setTimeout(() => current === p && setMode(1), 450);
   }

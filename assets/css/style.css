@@ -116,7 +116,7 @@ p { margin: 0; }
 .hero-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
   background: radial-gradient(55% 60% at 50% 54%, #FFF6EC 0, var(--bg) 58%, #F2DCC6 100%); }
 .hero-stage { position: absolute; inset: 0; pointer-events: none; }
-.hero-frames { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-frames { position: absolute; inset: 0; width: 100%; height: 100%; will-change: transform, opacity; }
 .hero-rings { position: absolute; left: 50%; top: 54%; width: min(84vh, 66vw); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; overflow: visible; }
 .hero-rings circle { fill: none; stroke: var(--bordo); stroke-width: .12; }
 .hero-rings .r1 { stroke-opacity: .22; stroke-dasharray: 320; stroke-dashoffset: 320; transition: stroke-dashoffset 2.4s var(--ease) .5s; }
@@ -133,6 +133,7 @@ p { margin: 0; }
 .loaded .deco-in { opacity: 1; transform: none; }
 
 .hero-title { position: absolute; left: 50%; top: 54%; translate: -50% -50%; width: max-content; display: flex; flex-direction: column; pointer-events: none; will-change: transform, opacity; }
+.hero-title-blur { filter: blur(3px); opacity: 0; }
 .ht-small { align-self: flex-start; padding-left: .2em; font-family: var(--f-accent); font-style: italic; font-weight: 500; font-size: clamp(36px, 5vw, 88px); line-height: 1; color: var(--green); margin-bottom: -.06em; }
 .ht-big { display: block; font-family: var(--f-display); font-size: clamp(56px, 13.4vw, 244px); line-height: .92; color: var(--bordo); letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; }
 .ht-tag { align-self: flex-end; padding-right: .3em; margin-top: clamp(14px, 1.8vw, 26px); font: italic 500 clamp(19px, 1.7vw, 28px)/1 var(--f-accent); color: var(--ink-2); }
@@ -311,7 +312,7 @@ h2.big { font-size: clamp(46px, 5.8vw, 92px); line-height: .98; }
 .modal-close { position: absolute; right: 16px; top: 16px; z-index: 3; background: rgba(255, 255, 255, .8); }
 .modal-visual { position: relative; background: radial-gradient(60% 55% at 50% 46%, #fff 0, var(--paper) 48%, color-mix(in srgb, var(--tint, #F5DABF) 60%, var(--paper)) 100%); }
 .modal-stage { position: absolute; inset: 0; }
-.dessert-frames { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.dessert-frames { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; will-change: transform, opacity; }
 .card-hint, .card-num, .card-layers { z-index: 2; }
 .seg { position: absolute; left: 50%; bottom: 24px; translate: -50% 0; display: flex; gap: 4px; padding: 5px; background: rgba(255, 255, 255, .78); backdrop-filter: blur(8px); border-radius: 999px; z-index: 2; box-shadow: inset 0 0 0 1px var(--line); }
 .seg button { white-space: nowrap; border: 0; background: transparent; height: 40px; padding: 0 18px; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--ink-2); transition: background .3s, color .3s; }
