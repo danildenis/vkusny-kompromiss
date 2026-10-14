@@ -1,3 +1,7 @@
 .claude/
 .DS_Store
+3d/renders/anim/
+3d/renders/anim_test/
 3d/renders/*.png
+3d/renders/*.log
+__pycache__/

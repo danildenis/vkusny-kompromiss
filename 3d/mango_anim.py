@@ -30,7 +30,10 @@ for side in (-1, 1):
 for o in (shell, cream, J): o.hide_render = True
 for o in list(sc.objects):
     if o.type == 'CAMERA': bpy.data.objects.remove(o)
-cam = kit.camera((0, -40, 10), (0, 0, -.2), 66)
+cam = kit.camera((0, -40, 10), (0, 0, -.2), 76)
+for o in list(sc.objects):
+    if o.name.startswith('floor'): bpy.data.objects.remove(o)
+sc.cycles.seed = 7; sc.cycles.use_animated_seed = False
 
 ease = lambda t: t * t * (3 - 2 * t)
 lerp = lambda a, b, t: a + (b - a) * t
@@ -41,29 +44,34 @@ gf, pf = halves[-1]; gb, pb = halves[1]
 def pose(a):
     """a: 0 — целое, 1 — раскрыто книжкой, 2 — слои разошлись."""
     o = ease(cl(a)); e = cl(a - 1)
-    lift, spread = ease(cl(e / .55)), ease(cl((e - .25) / .75))
+    lift, spread = ease(cl(e / .5)), ease(cl((e - .2) / .8))
+    # к разлёту камера мягко отъезжает, чтобы все слои уместились
+    cam.data.lens = lerp(76, 52, ease(cl((a - .85) / 1.0)))
     # передняя половина уходит влево, поворачиваясь срезом к зрителю
-    gf.location = (lerp(0, -3.5, o) + lerp(0, -3.2, spread), lerp(0, 1.2, o), 0)
-    gf.rotation_euler = (0, 0, math.radians(lerp(0, -150, o) + lerp(0, -8, spread)))
-    gb.location = (lerp(0, 3.5, o) + lerp(0, -4.4, spread), lerp(0, 1.2, o) + lerp(0, 1.0, spread), 0)
-    gb.rotation_euler = (0, 0, math.radians(lerp(0, -30, o) + lerp(0, 8, spread)))
-    # слои задней половины: сначала выходят из корпуса к зрителю, потом расходятся вправо
+    gf.location = (lerp(0, -3.5, o) + lerp(0, -4.6, spread), lerp(0, 1.2, o) + lerp(0, 1.5, spread), 0)
+    gf.rotation_euler = (0, 0, math.radians(lerp(0, -150, o) + lerp(0, -6, spread)))
+    gb.location = (lerp(0, 3.5, o) + lerp(0, -5.8, spread), lerp(0, 1.2, o) + lerp(0, 1.5, spread), 0)
+    gb.rotation_euler = (0, 0, math.radians(lerp(0, -30, o) + lerp(0, 10, spread)))
+    # слои задней половины: сначала выходят из корпуса к зрителю, потом расходятся вправо без нахлёста
     R = Matrix.Rotation(gb.rotation_euler.z, 4, 'Z').inverted()
     for k, p in enumerate(pb):
-        out = Vector((0, -1, 0)) * (lift * k * 1.3)                     # нормаль среза в локальных осях
-        side = R @ Vector((spread * k * 4.0, -spread * k * .6, 0))
+        out = Vector((0, -1, 0)) * (lift * k * 1.6)                     # нормаль среза в локальных осях
+        side = R @ Vector((spread * k * 5.9, -spread * k * .4, 0))
         p.location = out + side
 
 
 def anchors():
+    """Для каждого слоя задней половины и для передней половины: x центра, низ, верх, левый и правый край (доли кадра)."""
     bpy.context.view_layer.update()
     res = []
-    for p in pb:
-        pts = [p.matrix_world @ Vector(c) for c in p.bound_box]
-        lo = min(pts, key=lambda v: v.z).z; hi = max(pts, key=lambda v: v.z).z
-        ctr = sum(pts, Vector()) / 8
+    for p in pb + [gf]:
+        objs = [p] if p.type == 'MESH' else list(p.children)
+        pts = [o.matrix_world @ Vector(c) for o in objs for c in o.bound_box]
+        lo = min(v.z for v in pts); hi = max(v.z for v in pts)
+        ctr = sum(pts, Vector()) / len(pts)
+        pr = [world_to_camera_view(sc, cam, v) for v in pts]
         a = world_to_camera_view(sc, cam, Vector((ctr.x, ctr.y, lo))); b = world_to_camera_view(sc, cam, Vector((ctr.x, ctr.y, hi)))
-        res.append([round(a.x, 4), round(1 - a.y, 4), round(1 - b.y, 4)])
+        res.append([round(a.x, 4), round(1 - a.y, 4), round(1 - b.y, 4), round(min(q.x for q in pr), 4), round(max(q.x for q in pr), 4)])
     return res
 
 

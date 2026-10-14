@@ -38,7 +38,8 @@ fetch(ANIM + 'meta.json').then(r => r.json()).then(m => {
 });
 const nearest = i => { for (let r = 0; r < frames.length + 2; r++) { if (frames[i - r]) return i - r; if (frames[i + r]) return i + r; } return -1; };
 
-let last = performance.now();
+let last = performance.now(), fs = 0;
+const lerpA = (A, B, k) => A.map((v, n) => v + (B[n] - v) * k);
 function tick(now) {
   requestAnimationFrame(tick);
   const dt = Math.min(.05, (now - last) / 1000); last = now; const t = now / 1000;
@@ -47,31 +48,43 @@ function tick(now) {
   const r = hero.getBoundingClientRect();
   if (r.bottom < 0) return;
   const p = DBG ?? clamp(-r.top / (r.height - innerHeight));
-  ps += (p - ps) * (1 - Math.exp(-dt * 7)); if (DBG !== null) { ps = p; t0 = -10; }
+  ps += (p - ps) * (1 - Math.exp(-dt * 6)); if (DBG !== null) { ps = p; t0 = -10; }
   ptr.x += (ptr.tx - ptr.x) * .05; ptr.y += (ptr.ty - ptr.y) * .05;
 
   const open = smooth(.08, .3, ps) * (1 - smooth(.86, .98, ps));
   const explode = smooth(.34, .62, ps) * (1 - smooth(.78, .92, ps));
   const a = Math.min(2, open + explode);             // 0 целое · 1 раскрыто · 2 слои
-  const fpos = a / meta.a_max * (meta.frames - 1);
+  const target = a / meta.a_max * (meta.frames - 1);
+  fs += (target - fs) * (1 - Math.exp(-dt * 9)); if (DBG !== null) fs = target;   // мягкое движение по кадрам
 
-  // размер холста и вписывание кадра: целое манго крупно, разлёт слоёв — по ширине экрана
   const W = heroStage.clientWidth, H = heroStage.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
   const [FW, FH] = meta.size, m = mobile();
-  const sWhole = Math.min(H * (m ? .78 : .9) / FH, W * (m ? 1.9 : 1.3) / FW), sFit = Math.min(sWhole, W * (m ? 1.05 : .98) / FW);
-  const s = sWhole + (sFit - sWhole) * smooth(0, 1.6, a);
-  const dw = FW * s, dh = FH * s, cy = H * (m ? .45 : .52);
+  // камера в Blender сама отъезжает к разлёту слоёв — здесь масштаб почти постоянный
+  const s = m ? Math.min(H * .92 / FH, W * (1.6 - .55 * smooth(0, 2, a)) / FW) : Math.min(H * 1.02 / FH, W * 1.02 / FW);
+  const dw = FW * s, dh = FH * s, cy = H * (m ? .46 : .53);
   const i = clamp((t - t0) / 2.2), ie = 1 - Math.pow(1 - i, 3);
-  const bob = Math.sin(t * 1.05) * 4 * (1 - a / 2);
-  const dx = (W - dw) / 2 + ptr.x * 18, dy = cy - dh / 2 + (1 - ie) * 40 + bob + ptr.y * 10;
+  const bob = Math.sin(t * 1.05) * 3 * (1 - a / 2);
+  const dx = (W - dw) / 2 + ptr.x * 14, dy = cy - dh / 2 + (1 - ie) * 36 + bob + ptr.y * 8;
+
+  const f = Math.round(fs), F = nearest(f);
+  const f0 = Math.floor(fs), kf = fs - f0, an = meta.anchors[f0].map((v, n) => lerpA(v, meta.anchors[Math.min(meta.frames - 1, f0 + 1)][n], kf));
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-  ctx.imageSmoothingQuality = 'high';
-  const f0 = Math.floor(fpos), k = fpos - f0, A = nearest(f0), B = nearest(Math.min(meta.frames - 1, f0 + 1));
   ctx.globalAlpha = smooth(0, .7, i);
-  if (A >= 0) ctx.drawImage(frames[A], dx, dy, dw, dh);
-  if (B >= 0 && B !== A && k > .01) { ctx.globalAlpha *= k; ctx.drawImage(frames[B], dx, dy, dw, dh); }
+  // мягкая тень под каждым куском; где куски стоят вместе, тени не складываются
+  const sh = an.map(([, by, , x0, x1]) => ({ x0: dx + x0 * dw, x1: dx + x1 * dw, y: dy + by * dh }));
+  sh.forEach((e, n) => {
+    let over = 0;
+    sh.forEach((o, k) => { if (k !== n) { const ov = Math.max(0, Math.min(e.x1, o.x1) - Math.max(e.x0, o.x0)) / Math.max(1, e.x1 - e.x0); over += Math.min(1, ov); } });
+    const cx = (e.x0 + e.x1) / 2, rw = (e.x1 - e.x0) * .62, rh = rw * .16;
+    const g = ctx.createRadialGradient(cx, e.y, 0, cx, e.y, rw);
+    g.addColorStop(0, `rgba(108, 21, 30, ${.2 / (1 + over)})`); g.addColorStop(1, 'rgba(108, 21, 30, 0)');
+    ctx.save(); ctx.translate(cx, e.y); ctx.scale(1, rh / rw); ctx.translate(-cx, -e.y);
+    ctx.fillStyle = g; ctx.fillRect(cx - rw, e.y - rw, rw * 2, rw * 2); ctx.restore();
+  });
+  ctx.imageSmoothingQuality = 'high';
+  if (F >= 0) ctx.drawImage(frames[F], dx, dy, dw, dh);
   ctx.globalAlpha = 1;
   cv.style.filter = i < 1 ? `blur(${(1 - ie) * 10}px)` : '';
 
@@ -99,7 +112,7 @@ function tick(now) {
 
   // подписи слоёв — по точкам, которые Blender посчитал для каждого кадра
   const lv = smooth(.55, .62, ps) * (1 - smooth(.78, .82, ps));
-  const an = meta.anchors[Math.round(fpos)], sr = heroStage.getBoundingClientRect();
+  const sr = heroStage.getBoundingClientRect();
   labels.forEach((lb, k2) => {
     const up = k2 % 2 === 1; lb.classList.toggle('up', up);
     const [ax, ay0, ay1] = an[k2];

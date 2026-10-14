@@ -295,7 +295,13 @@ def cut_half(src, side, cap_mat, relief=None, step=.03, inner=None, paint=None):
     if inner is not None:
         ib = bmesh.new(); ib.from_mesh(inner.data)
         bmesh.ops.bisect_plane(ib, geom=ib.verts[:] + ib.edges[:] + ib.faces[:], dist=1e-6, plane_co=(0, 0, 0), plane_no=(0, 1, 0), clear_outer=side < 0, clear_inner=side > 0)
-        polys += [[(v.co.x, v.co.z) for v in L] for L in _loops(ib)]; ib.free()
+        polys += [[(v.co.x, v.co.z) for v in L] for L in _loops(ib)]
+        # стенка полости: половина начинки, вывернутая внутрь, из материала среза (крем вокруг джема)
+        tmp = bpy.data.meshes.new('cavity'); ib.to_mesh(tmp); ib.free()
+        before = set(bm.faces); bm.from_mesh(tmp); bpy.data.meshes.remove(tmp)
+        cav = [f for f in bm.faces if f not in before]
+        bmesh.ops.reverse_faces(bm, faces=cav)
+        for f in cav: f.material_index = len(src.data.materials); f.smooth = True
     # точки внутри среза (внешний контур минус дырки)
     allp = np.concatenate([np.array(p) for p in polys])
     xs = np.arange(allp[:, 0].min(), allp[:, 0].max(), step); zs = np.arange(allp[:, 1].min(), allp[:, 1].max(), step * .866)
