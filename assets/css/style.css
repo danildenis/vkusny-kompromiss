@@ -115,7 +115,8 @@ p { margin: 0; }
 .hero { position: relative; height: 440vh; }
 .hero-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
   background: radial-gradient(55% 60% at 50% 54%, #FFF6EC 0, var(--bg) 58%, #F2DCC6 100%); }
-.hero-stage { position: absolute; inset: 0; }
+.hero-stage { position: absolute; inset: 0; pointer-events: none; }
+.hero-frames { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-rings { position: absolute; left: 50%; top: 54%; width: min(84vh, 66vw); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; overflow: visible; }
 .hero-rings circle { fill: none; stroke: var(--bordo); stroke-width: .12; }
 .hero-rings .r1 { stroke-opacity: .22; stroke-dasharray: 320; stroke-dashoffset: 320; transition: stroke-dashoffset 2.4s var(--ease) .5s; }

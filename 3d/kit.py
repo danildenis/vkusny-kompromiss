@@ -135,39 +135,60 @@ def mat_chocolate(name, color, rough=.38):
     return m
 
 
-def mat_curd(name, color='#f7f1e7', shade='#d8c6aa'):
-    """Творожный крем на срезе: плотный, матовый; рельеф — в геометрии, в порах мягкая тень."""
-    m = bpy.data.materials.new(name); n = N(m)
-    tc = n('ShaderNodeTexCoord')
-    ao = n('ShaderNodeAmbientOcclusion', Distance=.12, _samples=16)
-    grain = n('ShaderNodeTexNoise', Scale=140, Detail=3.0); n.link(tc.outputs['Object'], grain.inputs['Vector'])
+def _curd_bsdf(n, tc, color, shade):
+    ao = n('ShaderNodeAmbientOcclusion', Distance=.08, _samples=16)
+    grain = n('ShaderNodeTexNoise', Scale=220, Detail=2.0); n.link(tc.outputs['Object'], grain.inputs['Vector'])
     blot = n('ShaderNodeTexNoise', Scale=3.5, Detail=4.0); n.link(tc.outputs['Object'], blot.inputs['Vector'])
-    base = ramp(n, blot.outputs['Fac'], [(.35, hexc('#f2eadc')), (.65, hexc(color))])
+    base = ramp(n, blot.outputs['Fac'], [(.35, hexc('#f3ecdf')), (.65, hexc(color))])
     col = n('ShaderNodeMix', _data_type='RGBA'); n.link(ao.outputs['AO'], col.inputs['Factor'])
     col.inputs['A'].default_value = (*hexc(shade), 1); n.link(base.outputs['Color'], col.inputs['B'])
-    bump = n('ShaderNodeBump', Strength=.35, Distance=.004); n.link(grain.outputs['Fac'], bump.inputs['Height'])
-    p, _ = principled(n, Roughness=.85, **{'Subsurface Weight': .1, 'Subsurface Radius': (.3, .3, .28), 'Subsurface Scale': .04, 'Specular IOR Level': .28})
+    bump = n('ShaderNodeBump', Strength=.3, Distance=.003); n.link(grain.outputs['Fac'], bump.inputs['Height'])
+    p = n('ShaderNodeBsdfPrincipled', Roughness=.8, **{'Subsurface Weight': .12, 'Subsurface Radius': (.3, .3, .28), 'Subsurface Scale': .04, 'Specular IOR Level': .32})
     n.link(col.outputs['Result'], p.inputs['Base Color']); n.link(bump.outputs['Normal'], p.inputs['Normal'])
+    return p
+
+
+def _jam_bsdf(n, tc, color, deep, fruit=True):
+    no = n('ShaderNodeTexNoise', Scale=3, Detail=2.0); n.link(tc.outputs['Object'], no.inputs['Vector'])
+    fib = n('ShaderNodeTexNoise', Scale=18, Detail=6.0, Distortion=2.5); n.link(tc.outputs['Object'], fib.inputs['Vector'])
+    c = ramp(n, no.outputs['Fac'], [(.2, hexc(deep)), (.75, hexc(color))])
+    fl = ramp(n, fib.outputs['Fac'], [(.55, (0, 0, 0)), (.7, (1, 1, 1))])
+    mixf = n('ShaderNodeMix', _data_type='RGBA', _blend_type='SCREEN')
+    n.link(c.outputs['Color'], mixf.inputs['A']); mixf.inputs['B'].default_value = (*hexc('#ffb347'), 1)
+    f2 = n('ShaderNodeMath', _operation='MULTIPLY'); n.link(fl.outputs['Color'], f2.inputs[0]); f2.inputs[1].default_value = .35 if fruit else 0
+    n.link(f2.outputs[0], mixf.inputs['Factor'])
+    bump = n('ShaderNodeBump', Strength=.05, Distance=.01); n.link(fib.outputs['Fac'], bump.inputs['Height'])
+    p = n('ShaderNodeBsdfPrincipled', Roughness=.06, **{'Subsurface Weight': .7, 'Subsurface Radius': (1.0, .55, .25), 'Subsurface Scale': .18,
+                                                     'Coat Weight': .7, 'Coat Roughness': .03, 'Specular IOR Level': .65})
+    n.link(mixf.outputs['Result'], p.inputs['Base Color']); n.link(bump.outputs['Normal'], p.inputs['Normal'])
+    return p
+
+
+def _out(n, sock):
+    o = n('ShaderNodeOutputMaterial'); n.link(sock, o.inputs['Surface'])
+
+
+def mat_curd(name, color='#f8f4ee', shade='#cdbda5'):
+    """Творожный крем на срезе: плотный, матовый; рельеф — в геометрии, в лунках мягкая тень."""
+    m = bpy.data.materials.new(name); n = N(m); tc = n('ShaderNodeTexCoord')
+    _out(n, _curd_bsdf(n, tc, color, shade).outputs[0])
+    return m
+
+
+def mat_curd_jam(name, jam=('#f69516', '#e2620c'), color='#f8f4ee', shade='#cdbda5'):
+    """Крем с прожилками и потёками джема: доля джема — атрибут вершин 'vein'."""
+    m = bpy.data.materials.new(name); n = N(m); tc = n('ShaderNodeTexCoord')
+    a = _curd_bsdf(n, tc, color, shade); b = _jam_bsdf(n, tc, *jam)
+    at = n('ShaderNodeAttribute', _attribute_name='vein')
+    mix = n('ShaderNodeMixShader'); n.link(at.outputs['Fac'], mix.inputs[0]); n.link(a.outputs[0], mix.inputs[1]); n.link(b.outputs[0], mix.inputs[2])
+    _out(n, mix.outputs[0])
     return m
 
 
 def mat_jam(name, color='#e8740c', deep='#b8430a', fruit=True):
     """Конфи: глянцевый полупрозрачный гель с тонкими волокнами фрукта."""
-    m = bpy.data.materials.new(name); n = N(m)
-    tc = n('ShaderNodeTexCoord')
-    no = n('ShaderNodeTexNoise', Scale=7, Detail=3.0); n.link(tc.outputs['Object'], no.inputs['Vector'])
-    fib = n('ShaderNodeTexNoise', Scale=18, Detail=6.0, Distortion=2.5); n.link(tc.outputs['Object'], fib.inputs['Vector'])
-    c = ramp(n, no.outputs['Fac'], [(.25, hexc(deep)), (.6, hexc(color))])
-    fl = ramp(n, fib.outputs['Fac'], [(.55, (0, 0, 0)), (.7, (1, 1, 1))])
-    mixf = n('ShaderNodeMix', _data_type='RGBA', _blend_type='SCREEN'); n.link(fl.outputs['Color'], mixf.inputs['Factor'])
-    mixf.inputs['Factor'].default_value = .2
-    n.link(c.outputs['Color'], mixf.inputs['A']); mixf.inputs['B'].default_value = (*hexc('#ffb347'), 1)
-    f2 = n('ShaderNodeMath', _operation='MULTIPLY'); n.link(fl.outputs['Color'], f2.inputs[0]); f2.inputs[1].default_value = .35 if fruit else 0
-    n.link(f2.outputs[0], mixf.inputs['Factor'])
-    bump = n('ShaderNodeBump', Strength=.05, Distance=.01); n.link(fib.outputs['Fac'], bump.inputs['Height'])
-    p, _ = principled(n, Roughness=.06, **{'Subsurface Weight': .7, 'Subsurface Radius': (1.0, .55, .25), 'Subsurface Scale': .18,
-                                           'Coat Weight': .7, 'Coat Roughness': .03, 'Specular IOR Level': .65})
-    n.link(mixf.outputs['Result'], p.inputs['Base Color']); n.link(bump.outputs['Normal'], p.inputs['Normal'])
+    m = bpy.data.materials.new(name); n = N(m); tc = n('ShaderNodeTexCoord')
+    _out(n, _jam_bsdf(n, tc, color, deep, fruit).outputs[0])
     return m
 
 
@@ -257,9 +278,10 @@ def _bdist(px, pz, polys):
     return d
 
 
-def cut_half(src, side, cap_mat, relief=None, step=.03, inner=None):
+def cut_half(src, side, cap_mat, relief=None, step=.03, inner=None, paint=None):
     """Половина тела, рассечённого плоскостью y=0, с настоящей плоскостью среза.
-    relief(x, z, dist_to_edge) -> сдвиг среза наружу (поры, выпуклость джема).
+    relief(x, z, dist_to_edge, dist_to_inner) -> сдвиг среза наружу (поры, выпуклость джема).
+    paint(x, z, dist_to_edge, dist_to_inner) -> 0..1, атрибут 'vein' (прожилки джема в креме).
     inner — объект, чей срез вырезается дыркой (джем внутри крема)."""
     import numpy as np
     from mathutils import geometry
@@ -269,6 +291,7 @@ def cut_half(src, side, cap_mat, relief=None, step=.03, inner=None):
     for v in bm.verts:
         if abs(v.co.y) < 1e-5: v.co.y = 0
     polys = [[(v.co.x, v.co.z) for v in L] for L in _loops(bm)]
+    n_outer = len(polys)
     if inner is not None:
         ib = bmesh.new(); ib.from_mesh(inner.data)
         bmesh.ops.bisect_plane(ib, geom=ib.verts[:] + ib.edges[:] + ib.faces[:], dist=1e-6, plane_co=(0, 0, 0), plane_no=(0, 1, 0), clear_outer=side < 0, clear_inner=side > 0)
@@ -292,14 +315,19 @@ def cut_half(src, side, cap_mat, relief=None, step=.03, inner=None):
     for p in polys: okf ^= _pip(cxs, czs, p)
     fo = [f for f, ok in zip(fo, okf) if ok]
     # высота среза: 0 на контуре, рельеф внутри
-    vd = _bdist(np.array([v[0] for v in vo]), np.array([v[1] for v in vo]), polys)
+    vx = np.array([v[0] for v in vo]); vz = np.array([v[1] for v in vo])
+    vd = _bdist(vx, vz, polys)
+    vj = _bdist(vx, vz, polys[n_outer:]) if inner is not None else np.full(vx.shape, 1e9)
     sgn = 1 if side < 0 else -1          # нормаль среза смотрит к отсутствующей половине
     mi = len(bm.verts) and max(len(src.data.materials), 1)
     cap_idx = len(src.data.materials)
     new = []
-    for (x, z), dd in zip(vo, vd):
-        h = relief(x, z, dd) if relief and dd > 1e-4 else 0.0
-        new.append(bm.verts.new((x, sgn * h, z)))
+    lay = bm.verts.layers.float.get('vein') or bm.verts.layers.float.new('vein')
+    for (x, z), dd, dj in zip(vo, vd, vj):
+        h = relief(x, z, dd, dj) if relief and dd > 1e-4 else 0.0
+        v = bm.verts.new((x, sgn * h, z))
+        if paint: v[lay] = paint(x, z, dd, dj)
+        new.append(v)
     for f in fo:
         # ориентация по плоской раскладке, до рельефа: нормаль среза смотрит наружу (+y·sgn)
         (ax, az), (bx, bz), (cx, cz) = vo[f[0]], vo[f[1]], vo[f[2]]

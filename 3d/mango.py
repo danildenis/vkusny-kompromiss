@@ -38,18 +38,19 @@ def jam(p):
 
 
 sc = kit.reset(samples=110)
-kit.world(.45); kit.studio()
+kit.world(.3); kit.studio()
 
 velour = kit.mat_velour('velour', [(0, '#f7c51f'), (.45, '#f6a414'), (.72, '#f0701c'), (1, '#d93a22')], axis=(.62, 0, .78), span=(-3.6, 4.2), speck=.35)
 shell_cut = kit.mat_chocolate('shell_cut', '#f2dfb4', .35)
-curd = kit.mat_curd('curd', '#f8f4ee', '#c9b79c')
+curd = kit.mat_curd_jam('curd', ('#f69516', '#e2620c'), '#f8f4ee', '#cdbda5')
 conf = kit.mat_jam('confit', '#f69516', '#e2620c')
 
 M = kit.mesh_from('mango', mango)
 T = .16
 cream = kit.offset(M, 'cream', T + .004); kit.setmat(cream, curd)   # до утолщения корпуса
 shell = M; kit.setmat(shell, velour)
-sol = shell.modifiers.new('s', 'SOLIDIFY'); sol.thickness = T; sol.offset = -1; sol.use_even_offset = True
+shell.data.materials.append(shell_cut)   # изнутри корпус — белый шоколад
+sol = shell.modifiers.new('s', 'SOLIDIFY'); sol.thickness = T; sol.offset = -1; sol.use_even_offset = True; sol.material_offset = 1
 kit.apply_all(shell)
 J = kit.mesh_from('jam', jam, 128, 64); kit.setmat(J, conf)
 
@@ -65,14 +66,32 @@ def bubbles(x, z, scale, rmax, seed):
     return best
 
 
-def curd_relief(x, z, d):
-    t = min(1, d / .2)
-    lump = noise.fractal(Vector((x * 6.0, 1.7, z * 6.0)), .6, 2.0, 4)
-    holes = bubbles(x, z, 16.0, .035, 2.0) * .9 + bubbles(x, z, 6.0, .075, 5.0) * .75 + bubbles(x, z, 2.2, .14, 8.0) * .4
-    return t * (.016 * lump - holes)
+def sstep(a, b, x):
+    t = max(0.0, min(1.0, (x - a) / (b - a))); return t * t * (3 - 2 * t)
 
 
-def jam_relief(x, z, d):
+# потёки конфи вниз по срезу: (x старта, длина, ширина)
+DRIPS = [(.4, 1.3, .17, -.1), (.85, .45, .1, .06)]
+JAM_BOTTOM = -2.35
+
+
+def vein(x, z, d, dj):
+    """Только едва заметный переход у края начинки — без прожилок и потёков."""
+    return .45 * math.exp(-dj / .025) if dj < .3 else 0.0
+
+
+def curd_relief(x, z, d, dj):
+    t = min(1, d / .15)
+    grain = .007 * noise.fractal(Vector((x * 22, 1.7, z * 22)), .5, 2.0, 3)
+    f = noise.voronoi(Vector((x * 9, 3.3, z * 9)))[0]
+    crev = -.016 * (1 - min(1, (f[1] - f[0]) / .16))         # крупинки творога
+    smear = .005 * noise.fractal(Vector((x * .8, 4.4, z * 14)), .6, 2.0, 3)  # след ножа
+    holes = bubbles(x, z, 9.0, .03, 2.0) * .8
+    j = vein(x, z, d, dj)
+    return t * ((grain + crev + smear - holes) * (1 - j) + .014 * j)
+
+
+def jam_relief(x, z, d, dj=0):
     return .13 * (1 - math.exp(-d / .2)) + .004 * noise.fractal(Vector((x * 3, 9.1, z * 3)), .7, 2.0, 3)
 
 
@@ -90,7 +109,7 @@ if WHAT in ('cut', 'all'):
     halves = []
     for side in (-1, 1):
         parts = [kit.cut_half(shell, side, shell_cut),
-                 kit.cut_half(cream, side, curd, curd_relief, .016, inner=J),
+                 kit.cut_half(cream, side, curd, curd_relief, .016, inner=J, paint=vein),
                  kit.cut_half(J, side, conf, jam_relief, .03)]
         halves.append(kit.group('front' if side < 0 else 'back', parts))
     for o in (shell, cream, J): o.hide_render = True
