@@ -74,7 +74,7 @@ export function mountCart() {
     list.innerHTML = its.map(i => {
       const p = byId(i.id);
       return `<li class="cart-item" data-id="${p.id}">
-        <span class="cart-swatch"><img src="${p.photo}" alt=""></span>
+        <span class="cart-swatch"><img src="${p.thumb}" alt=""></span>
         <div class="cart-item-info"><b>${p.name}</b><span>${rub(p.price)} за десерт</span></div>
         <div class="stepper"><button type="button" data-dec aria-label="Меньше">−</button><span>${i.qty}</span><button type="button" data-inc aria-label="Больше">+</button></div>
         <b class="cart-item-sum">${rub(p.price * i.qty)}</b>
@@ -125,7 +125,7 @@ export function flyToCart(fromEl, product) {
   const target = document.querySelector('.cart-btn'); if (!target) return;
   const a = fromEl.getBoundingClientRect(), b = target.getBoundingClientRect();
   const dot = document.createElement('span');
-  dot.className = 'fly-dot'; dot.innerHTML = `<img src="${product.photo}" alt="">`;
+  dot.className = 'fly-dot'; dot.innerHTML = `<img src="${product.thumb}" alt="">`;
   dot.style.left = a.left + a.width / 2 - 20 + 'px'; dot.style.top = a.top + a.height / 2 - 20 + 'px';
   document.body.appendChild(dot);
   const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);

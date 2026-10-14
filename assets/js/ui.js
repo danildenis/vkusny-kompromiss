@@ -1,60 +1,62 @@
 // Карточки десертов, окно «Состав и КБЖУ», общие элементы страниц.
-import * as THREE from 'three';
-import { Stage } from './stage.js';
-import { addLights, clamp } from './dessert3d.js';
-import { createPhotoDessert } from './photo3d.js';
+import { clamp, smooth } from './util.js';
+import { frameSet, drawFrames } from './frames.js';
 import { byId, rub } from './products.js';
 import { cart, mountCart, flyToCart } from './cart.js';
 
 export const isTouch = matchMedia('(hover: none)').matches;
 
-// 3D-вид одного десерта внутри HTML-элемента
+// Десерт из кадров Blender внутри HTML-элемента: 0 — целый, 1 — в разрезе, 2 — по слоям
 export function dessertView(el, product, opts = {}) {
-  const st = { open: 0, explode: 0, hide: 0, tOpen: opts.open ?? 0, tExplode: 0, tHide: 0, app: opts.revealEl ? 0 : 1 };
-  const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
-  const phase = Math.random() * 10;
-  let d;
+  const cv = document.createElement('canvas'); cv.className = 'dessert-frames'; el.appendChild(cv);
+  const ctx = cv.getContext('2d'), set = frameSet(product.id);
+  const st = { a: 0, open: opts.open ?? 0, explode: 0, app: opts.revealEl ? 0 : 1, since: null };
+  const ptr = { x: 0, y: 0, tx: 0, ty: 0 }, phase = Math.random() * 10;
+  set.load(0, opts.all ? 99 : Math.ceil((set.meta?.frames ?? 36) / 2));
   const view = {
     el, product,
-    init(stage) {
-      view.scene = new THREE.Scene();
-      addLights(view.scene, stage.env);
-      view.camera = new THREE.PerspectiveCamera(opts.fov ?? 24, 1, .1, 60);
-      createPhotoDessert(product, { grid: opts.grid ?? 120, layers: opts.layers }).then(dd => { if (view.disposed) return dd.dispose(); d = view.dessert = dd; dd.setOpacity(0); view.scene.add(dd.root); });
-    },
-    update(dt, t, rect) {
-      if (!d) return;
-      const k = 1 - Math.exp(-dt * (opts.speed ?? 4.5));
-      st.open += (st.tOpen - st.open) * k; st.explode += (st.tExplode - st.explode) * k; st.hide += (st.tHide - st.hide) * k;
-      ptr.x += (ptr.tx - ptr.x) * k; ptr.y += (ptr.ty - ptr.y) * k;
-      d.set(st.open, st.explode, st.hide);
-      // десерт появляется вместе с карточкой
+    frame(dt, t) {
+      if (!set.meta || !set.frames[0]) return;
+      const target = st.explode ? 2 : st.open ? 1 : 0;
+      st.a += (target - st.a) * (1 - Math.exp(-dt * (opts.speed ?? 5)));
+      if (Math.abs(target - st.a) < .002) st.a = target;
+      ptr.x += (ptr.tx - ptr.x) * (1 - Math.exp(-dt * 5)); ptr.y += (ptr.ty - ptr.y) * (1 - Math.exp(-dt * 5));
       const ready = !opts.revealEl || (opts.revealEl.classList.contains('in') && document.documentElement.classList.contains('loaded'));
       if (ready && st.since == null) st.since = t;
-      const shown = ready && t - st.since > .35;
-      // мягкое проявление: прозрачность, лёгкий подъём — без «выпрыгивания» из точки
-      st.app += ((shown ? 1 : 0) - st.app) * (1 - Math.exp(-dt * 2.2));
       if (document.documentElement.classList.contains('shot')) st.app = 1;
-      const a = st.app > .998 ? 1 : st.app, ae = a * a * (3 - 2 * a);
-      d.setOpacity(ae);
-      d.root.scale.setScalar(.94 + .06 * ae);
-      d.root.rotation.y = Math.sin(t * .55 + phase) * .16 * (1 - st.explode * .6) + ptr.x * .35;
-      d.root.rotation.x = ptr.y * .18;
-      d.root.position.y = Math.sin(t * 1.25 + phase) * .025 - (1 - ae) * .16;
-      d.root.rotation.x += (1 - ae) * .12;
-      const cam = view.camera, aspect = rect.width / rect.height;
-      const fit = (opts.fit ?? .8) * (1 + st.explode * (opts.explodeZoom ?? .45));
-      let dist = d.radius * fit / Math.sin(THREE.MathUtils.degToRad(cam.fov / 2));
-      if (aspect < 1) dist /= Math.max(aspect, .55);
-      const el2 = opts.elev ?? .1;
-      cam.position.set(0, Math.sin(el2) * dist, Math.cos(el2) * dist);
-      cam.lookAt(0, (opts.lookY ?? -.04) * d.radius, 0);
+      st.app += ((ready && t - st.since > .25 ? 1 : 0) - st.app) * (1 - Math.exp(-dt * 2.4));
+      const W = el.clientWidth, H = el.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+      const ae = st.app > .998 ? 1 : st.app * st.app * (3 - 2 * st.app);
+      const sz = Math.min(W, H) * (opts.fill ?? 1.02) * (1 - (opts.shrink ?? .17) * smooth(0, 1, st.a)), dw = sz, dh = sz;
+      const bob = Math.sin(t * 1.25 + phase) * 3 * (1 - st.a / 2);
+      const dx = (W - dw) / 2 + ptr.x * 10, dy = H * (opts.cy ?? .47) - dh / 2 + bob + ptr.y * 6 + (1 - ae) * 24;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      ctx.globalAlpha = ae;
+      drawFrames(ctx, set, st.a, dx, dy, dw, dh, .18);
+      ctx.globalAlpha = 1;
     },
-    setOpen(v) { st.tOpen = v; }, setExplode(v) { st.tExplode = v; }, setHide(v) { st.tHide = v; },
+    setOpen(v) { st.open = v; if (v) set.load(0, 99); }, setExplode(v) { st.explode = v; if (v) set.load(0, 99); }, setHide() {},
     pointer(x, y) { ptr.tx = x; ptr.ty = y; },
-    dispose() { view.disposed = true; d?.dispose(); },
+    dispose() { view.disposed = true; cv.remove(); },
   };
   return view;
+}
+
+// один цикл анимации на страницу: рисуются только видимые десерты
+export function createStage() {
+  const views = new Set(); let last = performance.now();
+  const loop = now => {
+    requestAnimationFrame(loop);
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    for (const v of views) {
+      const r = v.el.getBoundingClientRect();
+      if (r.bottom < -50 || r.top > innerHeight + 50 || !r.width) continue;
+      v.frame(dt, now / 1000);
+    }
+  };
+  requestAnimationFrame(loop);
+  return { add(v) { views.add(v); return v; }, remove(v) { views.delete(v); } };
 }
 
 export function cardHTML(p, i = 0) {
@@ -78,7 +80,7 @@ export function cardHTML(p, i = 0) {
 export function bindCard(card, stage, modal) {
   const p = byId(card.dataset.id);
   const stageEl = card.querySelector('[data-stage]');
-  const view = stage.add(dessertView(stageEl, p, { grid: 160, revealEl: card, fit: p.three.fit ?? .8 }));
+  const view = stage.add(dessertView(stageEl, p, { revealEl: card }));
   card._view = view;
   const setOpen = v => { view.setOpen(v); card.classList.toggle('is-open', !!v); };
   if (/[?&]open\b/.test(location.search)) setOpen(1);
@@ -106,7 +108,7 @@ export function mountModal() {
     <section class="modal" role="dialog" aria-modal="true">
       <button class="icon-btn modal-close" data-close aria-label="Закрыть"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
       <div class="modal-visual">
-        <div class="modal-stage"><canvas class="modal-gl"></canvas></div>
+        <div class="modal-stage"></div>
         <div class="seg" role="tablist">
           <button data-mode="0">Целиком</button><button data-mode="1" class="on">В разрезе</button><button data-mode="2">По слоям</button>
         </div>
@@ -157,14 +159,13 @@ export function mountModal() {
     el.querySelector('.modal').style.setProperty('--accent', p.accent);
     renderInfo(p);
     document.documentElement.classList.add('modal-open');
-    if (!stage) stage = new Stage(el.querySelector('.modal-gl'));
+    if (!stage) stage = createStage();
     if (view) { stage.remove(view); view.dispose(); }
-    view = stage.add(dessertView(stageEl, p, { grid: 180, layers: true, fit: .95, explodeZoom: .3, elev: .12 }));
-    stage.paused = false;
+    view = stage.add(dessertView(stageEl, p, { all: true, fill: .96, cy: .46, speed: 4 }));
     setMode(0);
     setTimeout(() => current === p && setMode(1), 450);
   }
-  function close() { document.documentElement.classList.remove('modal-open'); if (stage) setTimeout(() => { if (!document.documentElement.classList.contains('modal-open')) stage.paused = true; }, 400); }
+  function close() { document.documentElement.classList.remove('modal-open'); }
   el.addEventListener('click', e => { if (e.target.closest('[data-close]')) close(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   return { open, close };
@@ -182,7 +183,7 @@ export function initPage() {
   const html = document.documentElement;
   mountCart();
   const modal = mountModal();
-  const stage = new Stage(document.getElementById('gl'));
+  const stage = createStage();
 
   // занавес: логотип появляется, затем занавес уходит вверх
   const reveal = () => requestAnimationFrame(() => html.classList.add('loaded'));

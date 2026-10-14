@@ -1,5 +1,5 @@
 import { initPage, cardHTML, bindCard } from './ui.js';
-import { clamp, smooth } from './dessert3d.js';
+import { clamp, smooth } from './util.js';
 import { byId } from './products.js';
 
 const { stage, modal, watch } = initPage();

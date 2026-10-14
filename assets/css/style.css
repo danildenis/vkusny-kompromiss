@@ -311,7 +311,8 @@ h2.big { font-size: clamp(46px, 5.8vw, 92px); line-height: .98; }
 .modal-close { position: absolute; right: 16px; top: 16px; z-index: 3; background: rgba(255, 255, 255, .8); }
 .modal-visual { position: relative; background: radial-gradient(60% 55% at 50% 46%, #fff 0, var(--paper) 48%, color-mix(in srgb, var(--tint, #F5DABF) 60%, var(--paper)) 100%); }
 .modal-stage { position: absolute; inset: 0; }
-.modal-gl { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dessert-frames { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.card-hint, .card-num, .card-layers { z-index: 2; }
 .seg { position: absolute; left: 50%; bottom: 24px; translate: -50% 0; display: flex; gap: 4px; padding: 5px; background: rgba(255, 255, 255, .78); backdrop-filter: blur(8px); border-radius: 999px; z-index: 2; box-shadow: inset 0 0 0 1px var(--line); }
 .seg button { white-space: nowrap; border: 0; background: transparent; height: 40px; padding: 0 18px; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--ink-2); transition: background .3s, color .3s; }
 .seg button.on { background: var(--bordo); color: var(--cream); }

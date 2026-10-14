@@ -100,7 +100,7 @@ def principled(n, **kw):
 
 
 # ---------- материалы ----------
-def mat_velour(name, stops, axis=(0, 0, 1), span=(-1, 1), speck=1.0):
+def mat_velour(name, stops, axis=(0, 0, 1), span=(-1, 1), speck=1.0, marks=(), rough=.58, sheen=.22, coat=0.0):
     """Бархатное напыление какао-масла: цветовой переход по оси + мелкие капли спрея."""
     m = bpy.data.materials.new(name); n = N(m)
     tc = n('ShaderNodeTexCoord')
@@ -119,9 +119,30 @@ def mat_velour(name, stops, axis=(0, 0, 1), span=(-1, 1), speck=1.0):
     n.link(col.outputs['Color'], mix1.inputs['A']); n.link(dots.outputs['Color'], mix1.inputs['B'])
     mix2 = n('ShaderNodeMix', _data_type='RGBA', _blend_type='OVERLAY'); mix2.inputs['Factor'].default_value = .25
     n.link(mix1.outputs['Result'], mix2.inputs['A']); n.link(tone.outputs['Color'], mix2.inputs['B'])
-    bump = n('ShaderNodeBump', Strength=.45, Distance=.015); n.link(vor.outputs['Distance'], bump.inputs['Height'])
-    p, _ = principled(n, Roughness=.58, **{'Sheen Weight': .22, 'Sheen Roughness': .45, 'Subsurface Weight': .04, 'Specular IOR Level': .35})
-    n.link(mix2.outputs['Result'], p.inputs['Base Color']); n.link(bump.outputs['Normal'], p.inputs['Normal'])
+    res = mix2.outputs['Result']
+    # пометки поверх напыления: прожилки ('streak') и крапинки ('spots')
+    for mk in marks:
+        kind, color, scale, strength = mk[:4]
+        mp = n('ShaderNodeMapping'); n.link(tc.outputs['Object'], mp.inputs['Vector'])
+        mp.inputs['Scale'].default_value = mk[4] if len(mk) > 4 else (1, 1, 1)
+        if kind == 'streak':
+            tx = n('ShaderNodeTexNoise', Scale=scale, Detail=4.0, Distortion=.6); n.link(mp.outputs['Vector'], tx.inputs['Vector'])
+            mask = ramp(n, tx.outputs['Fac'], [(.52, (0, 0, 0)), (.7, (1, 1, 1))])
+        else:
+            tx = n('ShaderNodeTexVoronoi', Scale=scale, Randomness=1.0); n.link(mp.outputs['Vector'], tx.inputs['Vector'])
+            dens = n('ShaderNodeTexNoise', Scale=scale * .18, Detail=2.0); n.link(tc.outputs['Object'], dens.inputs['Vector'])
+            sp = ramp(n, tx.outputs['Distance'], [(0, (1, 1, 1)), (.16, (1, 1, 1)), (.26, (0, 0, 0))])
+            dm = ramp(n, dens.outputs['Fac'], [(.45, (0, 0, 0)), (.6, (1, 1, 1))])
+            mask = n('ShaderNodeMix', _data_type='RGBA', _blend_type='MULTIPLY'); mask.inputs['Factor'].default_value = 1
+            n.link(sp.outputs['Color'], mask.inputs['A']); n.link(dm.outputs['Color'], mask.inputs['B'])
+        mout = next(o for o in mask.outputs if o.enabled)   # у узла Mix видим только нужный выход
+        f = n('ShaderNodeMath', _operation='MULTIPLY'); n.link(mout, f.inputs[0]); f.inputs[1].default_value = strength
+        mx = n('ShaderNodeMix', _data_type='RGBA'); n.link(f.outputs[0], mx.inputs['Factor'])
+        n.link(res, mx.inputs['A']); mx.inputs['B'].default_value = (*hexc(color), 1); res = mx.outputs['Result']
+    bump = n('ShaderNodeBump', Strength=.45 if coat == 0 else .12, Distance=.015); n.link(vor.outputs['Distance'], bump.inputs['Height'])
+    p, _ = principled(n, Roughness=rough, **{'Sheen Weight': sheen, 'Sheen Roughness': .45, 'Subsurface Weight': .04, 'Specular IOR Level': .35,
+                                             'Coat Weight': coat, 'Coat Roughness': .12})
+    n.link(res, p.inputs['Base Color']); n.link(bump.outputs['Normal'], p.inputs['Normal'])
     return m
 
 
@@ -139,7 +160,8 @@ def _curd_bsdf(n, tc, color, shade):
     ao = n('ShaderNodeAmbientOcclusion', Distance=.08, _samples=16)
     grain = n('ShaderNodeTexNoise', Scale=220, Detail=2.0); n.link(tc.outputs['Object'], grain.inputs['Vector'])
     blot = n('ShaderNodeTexNoise', Scale=3.5, Detail=4.0); n.link(tc.outputs['Object'], blot.inputs['Vector'])
-    base = ramp(n, blot.outputs['Fac'], [(.35, hexc('#f3ecdf')), (.65, hexc(color))])
+    c0 = tuple(min(1, v * 1.08 + .01) for v in hexc(color))   # чуть светлее основного — живые пятна
+    base = ramp(n, blot.outputs['Fac'], [(.35, c0), (.65, hexc(color))])
     col = n('ShaderNodeMix', _data_type='RGBA'); n.link(ao.outputs['AO'], col.inputs['Factor'])
     col.inputs['A'].default_value = (*hexc(shade), 1); n.link(base.outputs['Color'], col.inputs['B'])
     bump = n('ShaderNodeBump', Strength=.3, Distance=.003); n.link(grain.outputs['Fac'], bump.inputs['Height'])
@@ -199,6 +221,12 @@ def mesh_from(name, fn, u=192, v=96):
     # полюса сферы смотрят по оси y — плоскость разреза y=0 проходит через ровный «экватор»
     for vert in bm.verts: c = vert.co; vert.co = Vector(fn((c.x, c.z, c.y)))
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    # нормали строго наружу: по знаку объёма (сложные формы иногда сбивают пересчёт)
+    vol = 0.0
+    for f in bm.faces:
+        vs = [v.co for v in f.verts]
+        for i in range(1, len(vs) - 1): vol += vs[0].dot(vs[i].cross(vs[i + 1]))
+    if vol < 0: bmesh.ops.reverse_faces(bm, faces=bm.faces[:])
     for f in bm.faces: f.smooth = True
     me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free()
     o = bpy.data.objects.new(name, me); bpy.context.collection.objects.link(o)

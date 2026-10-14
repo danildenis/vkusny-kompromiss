@@ -5,3 +5,6 @@
 3d/renders/*.png
 3d/renders/*.log
 __pycache__/
+3d/renders/cat/
+3d/renders/cat_still/
+3d/renders/cat_*.log

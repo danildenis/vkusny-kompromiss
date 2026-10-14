@@ -129,6 +129,9 @@ export const PRODUCTS = [
 
 function PI2(f) { return Math.PI * f; }
 
+// картинка десерта из Blender (целый, обрезан по краю) — для корзины и наборов
+PRODUCTS.forEach(p => { p.thumb = `assets/anim/cat/${p.id}/thumb.webp`; });
+
 export const byId = id => PRODUCTS.find(p => p.id === id);
 
 export const FILTERS = [
