@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="icon" href="assets/img/logo.png">
 <link rel="preload" as="image" href="assets/anim/mango/f000.webp">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" crossorigin>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
@@ -216,6 +217,7 @@
   </div>
 </footer>
 
+<script>/* шторка уходит сразу, не дожидаясь 3D-библиотек */(function(){var h=document.documentElement,go=function(){requestAnimationFrame(function(){h.classList.add('loaded')})};if(location.search.indexOf('shot')<0){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go();setTimeout(go,500);}})();</script>
 <script type="module" src="assets/js/home.js"></script>
 </body>
 </html>

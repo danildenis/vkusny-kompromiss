@@ -191,7 +191,7 @@ export function initPage() {
     const go = new URLSearchParams(location.search).get('go');
     if (go) document.querySelectorAll('main > *').forEach(el => { if (el.id !== go && !el.classList.contains(go)) el.style.display = 'none'; });
   }
-  Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(r => setTimeout(r, 450))]).then(reveal);
+  reveal();
   addEventListener('pageshow', e => { if (e.persisted) { html.classList.remove('leaving'); html.classList.add('loaded'); } });
 
   // плавный уход на другую страницу
@@ -211,7 +211,7 @@ export function initPage() {
     if (a.classList.contains('logo-mark')) boop(a);
     html.classList.remove('menu-open');
     html.classList.add('leaving'); html.classList.remove('loaded');
-    setTimeout(() => { location.href = a.href; }, 280);
+    setTimeout(() => { location.href = a.href; }, 180);
   });
   const boop = el => { el.classList.remove('boop'); void el.offsetWidth; el.classList.add('boop'); };
 

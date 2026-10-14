@@ -97,10 +97,10 @@ p { margin: 0; }
 .menu-btn { display: none; position: absolute; left: -8px; top: 50%; translate: 0 -50%; }
 
 /* ---------- появление страницы: короткая вуаль без логотипа ---------- */
-.veil { position: fixed; inset: 0; z-index: 300; background: var(--bg); pointer-events: none; opacity: 1; transition: opacity .5s ease; animation: veil-fallback 0s 1.6s forwards; }
+.veil { position: fixed; inset: 0; z-index: 300; background: var(--bg); pointer-events: none; opacity: 1; transition: opacity .38s ease; animation: veil-fallback 0s .9s forwards; }
 @keyframes veil-fallback { to { opacity: 0; } }
 .loaded .veil { opacity: 0; }
-.leaving .veil { opacity: 1; transition-duration: .26s; animation: none; }
+.leaving .veil { opacity: 1; transition-duration: .18s; animation: none; }
 .site-head .head-row > * { opacity: 0; transform: translateY(-10px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .loaded .site-head .head-row > * { opacity: 1; transform: none; }
 .loaded .site-head .nav.left { transition-delay: .08s; }
