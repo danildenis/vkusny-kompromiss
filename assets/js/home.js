@@ -61,7 +61,7 @@ function tick(now) {
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
   const [FW, FH] = meta.size, m = mobile();
   // камера в Blender сама отъезжает к разлёту слоёв — здесь масштаб почти постоянный
-  const s = m ? Math.min(H * .92 / FH, W * (1.6 - .55 * smooth(0, 2, a)) / FW) : Math.min(H * 1.02 / FH, W * 1.02 / FW);
+  const s = m ? Math.min(H * .8 / FH, W * (1.45 - .45 * smooth(0, 2, a)) / FW) : Math.min(H * .84 / FH, W * .88 / FW) * (1 + .14 * smooth(.6, 2, a));
   const dw = FW * s, dh = FH * s, cy = H * (m ? .46 : .53);
   const i = clamp((t - t0) / 2.2), ie = 1 - Math.pow(1 - i, 3);
   const bob = Math.sin(t * 1.05) * 3 * (1 - a / 2);
